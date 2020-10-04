@@ -23,15 +23,15 @@ def main():
     data_train = h5f['smiles_train'][:]
     data_test = h5f['smiles_test'][:]
     model = MoleculeVAE()
-    if os.path.isfile('vae_model_base64_45.h5'):
-        model.load(base64_charset, 'vae_model_base64_45.h5', latent_rep_size=latent_dim)
+    if os.path.isfile('data/vae_model_base64_45.h5'):
+        model.load(base64_charset, 'data/vae_model_base64_45.h5', latent_rep_size=latent_dim)
     else:
         model.create(base64_charset, latent_rep_size=latent_dim)
-    check_pointer = ModelCheckpoint(filepath='vae_model_base64_45.h5', verbose=1, save_best_only=True)
+    check_pointer = ModelCheckpoint(filepath='data/vae_model_base64_45.h5', verbose=1, save_best_only=True)
 
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.0001)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
 
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=2)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
     tbCallBack = TensorBoard(log_dir="TensorBoard/vae_model_base64_45")
 

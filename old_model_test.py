@@ -186,7 +186,7 @@ def main():
     #     type = 0
     #     t = 0
     #     s = []
-    #     x = random.randint(0, len(data_train))
+    #     x = random.randint(0, len(data_train)-1)
     #     source = data_train[x]
     #     for j in range(1000):
     #         source_x_latent = model.autoencoder.predict(source.reshape(1, width, len(charset))).argmax(axis=2)[0]
@@ -233,7 +233,7 @@ def main():
 
     # 1000*5解码率测试
     for i in range(1000):
-        x = random.randint(0, len(data_test))
+        x = random.randint(0, len(data_test)-1)
         source = data_test[x]
         for m in range(5):
             source_x_latent = model.encoder.predict(source.reshape(1, width, len(charset)))

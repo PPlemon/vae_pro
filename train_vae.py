@@ -15,7 +15,7 @@ RANDOM_SEED = 1337
 
 def main():
     # args = get_arguments()
-    # np.random.seed(args.random_seed)
+    np.random.seed(RANDOM_SEED)
 
     from molecules.model import MoleculeVAE
     from molecules.utils import one_hot_array, one_hot_index, from_one_hot_array, \
@@ -23,19 +23,19 @@ def main():
     from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping, TensorBoard
     
     # data_train, data_test, charset = load_dataset('data/per_all_25000(index)h5')
-    h5f = h5py.File('data/per_all_45(150).h5', 'r')
+    h5f = h5py.File('data/per_all_45.h5', 'r')
     data_train = h5f['smiles_train'][:]
     data_test = h5f['smiles_test'][:]
     charset = h5f['charset'][:]
     print(len(charset))
     print(charset)
     model = MoleculeVAE()
-    if os.path.isfile('data/vae_model_45(150).h5'):
-        model.load(charset, 'data/vae_model_45(150).h5', latent_rep_size=LATENT_DIM)
+    if os.path.isfile('data/vae_model_45.h5'):
+        model.load(charset, 'data/vae_model_45.h5', latent_rep_size=LATENT_DIM)
     else:
         model.create(charset, latent_rep_size=LATENT_DIM)
 
-    check_pointer = ModelCheckpoint(filepath='data/vae_model_45(150).h5', verbose=1, save_best_only=True)
+    check_pointer = ModelCheckpoint(filepath='data/vae_model_45.h5', verbose=1, save_best_only=True)
 
     reduce_lr = ReduceLROnPlateau(monitor='val_loss',
                                   factor=0.2,
@@ -44,7 +44,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    tbCallBack = TensorBoard(log_dir="TensorBoard/vae_model_45(150)")
+    tbCallBack = TensorBoard(log_dir="TensorBoard/vae_model_45")
 
     history = model.autoencoder.fit(
         data_train,

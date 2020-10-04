@@ -18,7 +18,9 @@ base64_charset = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M
 batch_size = 128
 latent_dim = 196
 epochs = 1000
+RANDOM_SEED = 1337
 def main():
+    np.random.seed(RANDOM_SEED)
     h5f = h5py.File('data/per_all_base64_45.h5', 'r')
     data_train = h5f['smiles_train'][:]
     data_test = h5f['smiles_test'][:]

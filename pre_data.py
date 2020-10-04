@@ -125,7 +125,7 @@ from molecules.util import base32_vector, base64_vector, vector1
 # h5f.create_dataset('charset', data=charset)
 
 # 按9:1划分数据并编码
-smiles = open('smiles(40).pkl', 'rb')
+smiles = open('smiles(50).pkl', 'rb')
 smiles = pickle.load(smiles)
 print(smiles[0])
 charset1 = list(reduce(lambda x, y: set(y) | x, smiles, set()))
@@ -135,13 +135,13 @@ charset = []
 for i in charset1:
     charset.append(i.encode())
 print(charset)
-logp = open('logp(40).pkl', 'rb')
+logp = open('logp(50).pkl', 'rb')
 logp = pickle.load(logp)
 print(len(logp))
-qed = open('qed(40).pkl', 'rb')
+qed = open('qed(50).pkl', 'rb')
 qed = pickle.load(qed)
 print(len(qed))
-sas = open('sas(40).pkl', 'rb')
+sas = open('sas(50).pkl', 'rb')
 sas = pickle.load(sas)
 print(len(sas))
 # charset = open('charset.pkl', 'rb')
@@ -155,7 +155,7 @@ for s0 in smiles[:train_idx]:
     smiles_train.append(vector1(s0, charset1))
 for s1 in smiles[train_idx:]:
     smiles_test.append(vector1(s1, charset1))
-h5f = h5py.File('data/per_all_40(120).h5', 'w')
+h5f = h5py.File('data/per_all_50(120).h5', 'w')
 h5f.create_dataset('smiles_train', data=smiles_train)
 h5f.create_dataset('smiles_test', data=smiles_test)
 h5f.create_dataset('logp_train', data=logp[:train_idx])
@@ -293,17 +293,17 @@ h5f.create_dataset('charset', data=charset)
 
 
 # 验证
-# h5f = h5py.File('data/per_all_45(120).h5', 'r')
+# h5f = h5py.File('data/per_all_40(120).h5', 'r')
 # data_train = h5f['smiles_train'][:]
 # data_test = h5f['smiles_test'][:]
 # print(len(data_train), len(data_test))
 # charset = h5f['charset'][:]
 # h5f.close()
 # model = MoleculeVAE()
-# if os.path.isfile('data/vae_model_45(120).h5'):
-#     model.load(charset, 'data/vae_model_45(120).h5', latent_rep_size=196)
+# if os.path.isfile('data/vae_model_40(120).h5'):
+#     model.load(charset, 'data/vae_model_40(120).h5', latent_rep_size=196)
 # else:
-#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_45(120).h5')
+#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_40(120).h5')
 # data_test_vae = model.autoencoder.predict(data_test)
 # count0 = 0
 # count1 = 0

@@ -61,7 +61,7 @@ def decode_smiles_from_indexes(vec, charset):
 def vector1(smiles, charset):
     smiles_vector = []
     smiles = smiles.replace('\n', '')
-    smiles = smiles.ljust(120)
+    smiles = smiles.ljust(150)
     for c in smiles:
         charset_vector = [0] * len(charset)
         for index, value in enumerate(charset):

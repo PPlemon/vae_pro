@@ -155,7 +155,7 @@ for s0 in smiles[:train_idx]:
     smiles_train.append(vector1(s0, charset1))
 for s1 in smiles[train_idx:]:
     smiles_test.append(vector1(s1, charset1))
-h5f = h5py.File('data/per_all_45(60).h5', 'w')
+h5f = h5py.File('data/per_all_45(150).h5', 'w')
 h5f.create_dataset('smiles_train', data=smiles_train)
 h5f.create_dataset('smiles_test', data=smiles_test)
 h5f.create_dataset('logp_train', data=logp[:train_idx])
@@ -293,17 +293,17 @@ h5f.create_dataset('charset', data=charset)
 
 
 # 验证
-# h5f = h5py.File('data/per_all_50(120).h5', 'r')
+# h5f = h5py.File('data/per_all_45(60).h5', 'r')
 # data_train = h5f['smiles_train'][:]
 # data_test = h5f['smiles_test'][:]
 # print(len(data_train), len(data_test))
 # charset = h5f['charset'][:]
 # h5f.close()
 # model = MoleculeVAE()
-# if os.path.isfile('data/vae_model_50(120).h5'):
-#     model.load(charset, 'data/vae_model_50(120).h5', latent_rep_size=196)
+# if os.path.isfile('data/vae_model_45(60).h5'):
+#     model.load(charset, 'data/vae_model_45(60).h5', latent_rep_size=196)
 # else:
-#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_50(120).h5')
+#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_45(60).h5')
 # data_test_vae = model.autoencoder.predict(data_test)
 # count0 = 0
 # count1 = 0

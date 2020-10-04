@@ -14,7 +14,7 @@ class MoleculeVAE():
     
     def create(self,
                charset,
-               max_length=120,
+               max_length=40,
                latent_rep_size=196,
                weights_file=None
                ):

@@ -30,12 +30,12 @@ def main():
     print(len(charset))
     print(charset)
     model = MoleculeVAE()
-    if os.path.isfile('data/vae_model_45.h5'):
-        model.load(charset, 'data/vae_model_45.h5', latent_rep_size=LATENT_DIM)
+    if os.path.isfile('data/vae_model_45(1).h5'):
+        model.load(charset, 'data/vae_model_45(1).h5', latent_rep_size=LATENT_DIM)
     else:
         model.create(charset, latent_rep_size=LATENT_DIM)
 
-    check_pointer = ModelCheckpoint(filepath='data/vae_model_45.h5', verbose=1, save_best_only=True)
+    check_pointer = ModelCheckpoint(filepath='data/vae_model_45(1).h5', verbose=1, save_best_only=True)
 
     reduce_lr = ReduceLROnPlateau(monitor='val_loss',
                                   factor=0.2,
@@ -44,7 +44,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    tbCallBack = TensorBoard(log_dir="TensorBoard/vae_model_45")
+    tbCallBack = TensorBoard(log_dir="TensorBoard/vae_model_45(1)")
 
     history = model.autoencoder.fit(
         data_train,

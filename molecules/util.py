@@ -10,7 +10,7 @@ base64_dictionary = {
                   'w': 48, 'x': 49, 'y': 50, 'z': 51,
                   '0': 52, '1': 53, '2': 54, '3': 55, '4': 56, '5': 57, '6': 58, '7': 59, '8': 60, '9': 61, '+': 62,
                   '/': 63}
-base64_charset = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+base64_charset = [' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
                   'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
                   'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
                   '8', '9', '+', '/']
@@ -35,9 +35,9 @@ def base64_vector(smiles):
     smiles_vector = []
     smiles = smiles.replace('\n', '')
     compressed = base64.b64encode(smiles.encode())
-    # compressed = compressed.ljust(120)
+    compressed = compressed.ljust(120)
     for c in compressed:
-        charset_vector = [0] * 64
+        charset_vector = [0] * len(base64_charset)
         for index, value in enumerate(base64_charset):
             if chr(c) == value:
                 charset_vector[index] = 1

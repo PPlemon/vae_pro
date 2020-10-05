@@ -255,11 +255,11 @@ from molecules.util import base32_vector, base64_vector, vector1
 #
 # print(chr_num)
 
-h5f = h5py.File('data/per_all_base64_45(120).h5', 'r')
-smiles_train = h5f['smiles_train'][:]
-# charset = h5f['charset'][:]
-# print(charset)
-print(len(smiles_train[0]), len(smiles_train[0][1]), smiles_train[0][60])
+# h5f = h5py.File('data/per_all_base64_45(120).h5', 'r')
+# smiles_train = h5f['smiles_train'][:]
+# # charset = h5f['charset'][:]
+# # print(charset)
+# print(len(smiles_train[0]), len(smiles_train[0][1]), smiles_train[0][60])
 
 # 取固定长度字符
 # smiles_data = []
@@ -293,33 +293,33 @@ print(len(smiles_train[0]), len(smiles_train[0][1]), smiles_train[0][60])
 
 
 # 验证
-# h5f = h5py.File('data/per_all_45(120).h5', 'r')
-# data_train = h5f['smiles_train'][:]
-# data_test = h5f['smiles_test'][:]
-# print(len(data_train), len(data_test))
-# charset = h5f['charset'][:]
-# h5f.close()
-# model = MoleculeVAE()
-# if os.path.isfile('data/vae_model_45(120).h5'):
-#     model.load(charset, 'data/vae_model_45(120).h5', latent_rep_size=196)
-# else:
-#     raise ValueError("Model file %s doesn't exist" % 'data/vae_base64_45(120).h5')
-# data_test_vae = model.autoencoder.predict(data_test)
-# count0 = 0
-# count1 = 0
-# for m in range(len(data_test_vae)):
-#     item0 = data_test[m].argmax(axis=1)
-#     item1 = data_test_vae[m].argmax(axis=1)
-#     print(item0)
-#     print(item1)
-#     # break
-#     for j in range(len(item0)):
-#         if item0[j] == 0:
-#             break
-#         count0 += 1
-#         if item0[j] != item1[j]:
-#             count1 += 1
-# print(count0, count1)
-# print((count0-count1)/count0)
+h5f = h5py.File('data/per_all_44(120).h5', 'r')
+data_train = h5f['smiles_train'][:]
+data_test = h5f['smiles_test'][:]
+print(len(data_train), len(data_test))
+charset = h5f['charset'][:]
+h5f.close()
+model = MoleculeVAE()
+if os.path.isfile('data/vae_model_44(120)(1).h5'):
+    model.load(charset, 'data/vae_model_44(120)(1).h5', latent_rep_size=196)
+else:
+    raise ValueError("Model file %s doesn't exist" % 'data/vae_model_44(120)(1).h5')
+data_test_vae = model.autoencoder.predict(data_test)
+count0 = 0
+count1 = 0
+for m in range(len(data_test_vae)):
+    item0 = data_test[m].argmax(axis=1)
+    item1 = data_test_vae[m].argmax(axis=1)
+    print(item0)
+    print(item1)
+    # break
+    for j in range(len(item0)):
+        if item0[j] == 0:
+            break
+        count0 += 1
+        if item0[j] != item1[j]:
+            count1 += 1
+print(count0, count1)
+print((count0-count1)/count0)
 
 

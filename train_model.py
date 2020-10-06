@@ -24,54 +24,41 @@ latent_dim = 196
 epochs = 1000
 RANDOM_SEED = 1337
 def main():
-    np.random.seed(RANDOM_SEED)
-    h5f = h5py.File('data/per_all_base64_40.h5', 'r')
-    data_train = h5f['smiles_train'][:]
-    data_test = h5f['smiles_test'][:]
-    model = MoleculeVAE()
-    if os.path.isfile('data/vae_model_base64_40.h5'):
-        model.load(base64_charset, 'data/vae_model_base64_40.h5', latent_rep_size=latent_dim)
-    else:
-        model.create(base64_charset, latent_rep_size=latent_dim)
-    check_pointer = ModelCheckpoint(filepath='data/vae_model_base64_40.h5', verbose=1, save_best_only=True)
+    l = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+    for i in l:
+        np.random.seed(RANDOM_SEED)
+        filename = 'data/per_all_base64_' + str(i) + '.h5'
+        h5f = h5py.File(filename, 'r')
+        data_train = h5f['smiles_train'][:]
+        data_test = h5f['smiles_test'][:]
+        model = MoleculeVAE()
+        length = len(data_train[0])
+        modelname = 'vae_model_base64_' + str(i) + '.h5'
 
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
+        if os.path.isfile(modelname):
+            model.load(base64_charset, modelname, latent_rep_size=latent_dim)
+        else:
+            model.create(base64_charset, max_length=length, latent_rep_size=latent_dim)
+        check_pointer = ModelCheckpoint(filepath=modelname, verbose=1, save_best_only=True)
 
-    early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
 
-    tbCallBack = TensorBoard(log_dir="TensorBoard/vae_model_base64_40")
+        early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    print(data_train[0])
-    history = model.autoencoder.fit(
-        data_train,
-        data_train,
-        shuffle=True,
-        epochs=epochs,
-        batch_size=batch_size,
-        callbacks=[check_pointer, reduce_lr, early_stopping, tbCallBack],
-        validation_data=(data_test, data_test)
-    )
-    acc = history.history['acc']
-    val_acc = history.history['val_acc']
+        TensorBoardname = "TensorBoard/vae_model_base64_" + str(i)
 
-    loss = history.history['loss']
-    val_loss = history.history['val_loss']
-    epochs_range = history.epoch
+        tbCallBack = TensorBoard(log_dir=TensorBoardname)
 
-    plt.figure(figsize=(8, 8))
-
-    plt.subplot(1, 2, 1)
-    plt.plot(epochs_range, acc, label='Training Accuracy')
-    plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-    plt.legend(loc='lower right')
-    plt.title('Training and Validation Accuracy')
-
-    plt.subplot(1, 2, 2)
-    plt.plot(epochs_range, loss, label='Training Loss')
-    plt.plot(epochs_range, val_loss, label='Validation Loss')
-    plt.legend(loc='upper right')
-    plt.title('Training and Validation Loss')
-    plt.show()
+        print(data_train[0])
+        history = model.autoencoder.fit(
+            data_train,
+            data_train,
+            shuffle=True,
+            epochs=epochs,
+            batch_size=batch_size,
+            callbacks=[check_pointer, reduce_lr, early_stopping, tbCallBack],
+            validation_data=(data_test, data_test)
+        )
 
 if __name__ == '__main__':
     main()

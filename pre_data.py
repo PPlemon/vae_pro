@@ -14,7 +14,7 @@ from scipy.spatial.distance import pdist
 from functools import reduce
 from molecules.utils import load_dataset, decode_smiles_from_indexes
 from sklearn.model_selection import train_test_split
-base64_charset = [' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+base64_charset = ['=', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
                   'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
                   'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
                   '8', '9', '+', '/']
@@ -22,7 +22,7 @@ base32_charset = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M
                   'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7']
 
 
-from molecules.util import base32_vector, base64_vector, vector1
+from molecules.util import base32_vector, vector, vector120, base64_vector, base64_vector_120
 # h5f = h5py.File('data/processed_25000.h5', 'r')
 #
 # charset1 = h5f['charset'][:]
@@ -125,7 +125,7 @@ from molecules.util import base32_vector, base64_vector, vector1
 # h5f.create_dataset('charset', data=charset)
 
 # 按9:1划分数据并编码
-smiles = open('smiles(44).pkl', 'rb')
+smiles = open('smiles(50).pkl', 'rb')
 smiles = pickle.load(smiles)
 print(smiles[0])
 # charset1 = list(reduce(lambda x, y: set(y) | x, smiles, set()))
@@ -135,13 +135,13 @@ print(smiles[0])
 # for i in charset1:
 #     charset.append(i.encode())
 # print(charset)
-logp = open('logp(44).pkl', 'rb')
+logp = open('logp(50).pkl', 'rb')
 logp = pickle.load(logp)
 print(len(logp))
-qed = open('qed(44).pkl', 'rb')
+qed = open('qed(50).pkl', 'rb')
 qed = pickle.load(qed)
 print(len(qed))
-sas = open('sas(44).pkl', 'rb')
+sas = open('sas(50).pkl', 'rb')
 sas = pickle.load(sas)
 print(len(sas))
 # charset = open('charset.pkl', 'rb')
@@ -155,7 +155,7 @@ for s0 in smiles[:train_idx]:
     smiles_train.append(base64_vector(s0))
 for s1 in smiles[train_idx:]:
     smiles_test.append(base64_vector(s1))
-h5f = h5py.File('data/per_all_base64_44(120).h5', 'w')
+h5f = h5py.File('data/per_all_base64_50.h5', 'w')
 h5f.create_dataset('smiles_train', data=smiles_train)
 h5f.create_dataset('smiles_test', data=smiles_test)
 h5f.create_dataset('logp_train', data=logp[:train_idx])
@@ -255,11 +255,11 @@ h5f.create_dataset('sas_test', data=sas[train_idx:])
 #
 # print(chr_num)
 
-h5f = h5py.File('data/per_all_base64_44(120).h5', 'r')
-smiles_train = h5f['smiles_train'][:]
-# charset = h5f['charset'][:]
-# print(charset)
-print(len(smiles_train[0]), len(smiles_train[0][1]), smiles_train[0][59])
+# h5f = h5py.File('data/per_all_base64_50(120).h5', 'r')
+# smiles_train = h5f['smiles_train'][:]
+# # charset = h5f['charset'][:]
+# # print(charset)
+# print(len(smiles_train[0]), len(smiles_train[0][1]), smiles_train[0][67])
 
 # 取固定长度字符
 # smiles_data = []
@@ -293,17 +293,17 @@ print(len(smiles_train[0]), len(smiles_train[0][1]), smiles_train[0][59])
 
 
 # 验证
-# h5f = h5py.File('data/per_all_48(120).h5', 'r')
+# h5f = h5py.File('data/per_all_base64_44(120).h5', 'r')
 # data_train = h5f['smiles_train'][:]
 # data_test = h5f['smiles_test'][:]
 # print(len(data_train), len(data_test))
-# charset = h5f['charset'][:]
+# # charset = h5f['charset'][:]
 # h5f.close()
 # model = MoleculeVAE()
-# if os.path.isfile('data/vae_model_48(120)(1).h5'):
-#     model.load(charset, 'data/vae_model_48(120)(1).h5', latent_rep_size=196)
+# if os.path.isfile('data/vae_model_base64_44(120)(1).h5'):
+#     model.load(base64_charset, 'data/vae_model_base64_44(120)(1).h5', latent_rep_size=196)
 # else:
-#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_48(120)(1).h5')
+#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_base64_44(120)(1).h5')
 # data_test_vae = model.autoencoder.predict(data_test)
 # count0 = 0
 # count1 = 0
@@ -311,7 +311,7 @@ print(len(smiles_train[0]), len(smiles_train[0][1]), smiles_train[0][59])
 #     item0 = data_test[m].argmax(axis=1)
 #     item1 = data_test_vae[m].argmax(axis=1)
 #     print(item0)
-#     print(item1)
+#     # print(item1)
 #     # break
 #     for j in range(len(item0)):
 #         if item0[j] == 0:

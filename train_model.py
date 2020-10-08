@@ -1,8 +1,14 @@
+import numpy as np
+import random
+RANDOM_SEED = 1337
+random.seed(RANDOM_SEED)
+np.random.seed(RANDOM_SEED)
+import tensorflow as tf
+tf.set_random_seed(RANDOM_SEED)
 import os
 import h5py
 import base64
 from functools import reduce
-import numpy as np
 import matplotlib.pyplot as plt
 import pandas
 from sklearn.model_selection import train_test_split
@@ -22,21 +28,21 @@ base64_charset_120 = ['=', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'
 batch_size = 128
 latent_dim = 196
 epochs = 1000
-RANDOM_SEED = 1337
+
 def main():
     l = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
     for i in l:
-        np.random.seed(RANDOM_SEED)
-        filename = 'data/per_all_base64_' + str(i) + '.h5'
+        filename = 'data/per_all_base64_' + str(i) + '(2).h5'
         h5f = h5py.File(filename, 'r')
         data_train = h5f['smiles_train'][:]
-        data_test = h5f['smiles_test'][:]
+        data_val = h5f['smiles_val'][:]
         model = MoleculeVAE()
         length = len(data_train[0])
-        modelname = 'vae_model_base64_' + str(i) + '.h5'
+        modelname = 'vae_model_base64_' + str(i) + '(2).h5'
+        print(modelname)
 
         if os.path.isfile(modelname):
-            model.load(base64_charset, modelname, latent_rep_size=latent_dim)
+            model.load(base64_charset, length, modelname, latent_rep_size=latent_dim)
         else:
             model.create(base64_charset, max_length=length, latent_rep_size=latent_dim)
         check_pointer = ModelCheckpoint(filepath=modelname, verbose=1, save_best_only=True)
@@ -45,7 +51,7 @@ def main():
 
         early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-        TensorBoardname = "TensorBoard/vae_model_base64_" + str(i)
+        TensorBoardname = "TensorBoard/vae_model_base64_" + str(i) + '_2'
 
         tbCallBack = TensorBoard(log_dir=TensorBoardname)
 
@@ -53,11 +59,11 @@ def main():
         history = model.autoencoder.fit(
             data_train,
             data_train,
-            shuffle=True,
+            shuffle=False,
             epochs=epochs,
             batch_size=batch_size,
             callbacks=[check_pointer, reduce_lr, early_stopping, tbCallBack],
-            validation_data=(data_test, data_test)
+            validation_data=(data_val, data_val)
         )
 
 if __name__ == '__main__':

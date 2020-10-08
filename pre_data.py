@@ -89,12 +89,13 @@ from molecules.util import base32_vector, vector, vector120, base64_vector, base
 smiles = open('smiles(50).pkl', 'rb')
 smiles = pickle.load(smiles)
 print(smiles[0])
-charset1 = list(reduce(lambda x, y: set(y) | x, smiles, set()))
-print(charset1)
-charset = []
-for i in charset1:
-    charset.append(i.encode())
-print(charset)
+# charset1 = list(reduce(lambda x, y: set(y) | x, smiles, set()))
+# charset1.insert(0, ' ')
+# print(charset1)
+# charset = []
+# for i in charset1:
+#     charset.append(i.encode())
+# print(charset)
 logp = open('logp(50).pkl', 'rb')
 logp = pickle.load(logp)
 print(len(logp))
@@ -114,12 +115,12 @@ smiles_train = []
 smiles_val = []
 smiles_test = []
 for s0 in smiles[:train_idx]:
-    smiles_train.append(vector(s0, charset1))
+    smiles_train.append(base64_vector(s0))
 for s1 in smiles[train_idx:test_idx]:
-    smiles_val.append(vector(s1, charset1))
+    smiles_val.append(base64_vector(s1))
 for s2 in smiles[test_idx:]:
-    smiles_test.append(vector(s2, charset1))
-h5f = h5py.File('data/per_all_50(2).h5', 'w')
+    smiles_test.append(base64_vector(s2))
+h5f = h5py.File('data/per_all_base64_50(2).h5', 'w')
 h5f.create_dataset('smiles_train', data=smiles_train)
 h5f.create_dataset('smiles_val', data=smiles_val)
 h5f.create_dataset('smiles_test', data=smiles_test)
@@ -132,7 +133,7 @@ h5f.create_dataset('qed_test', data=qed[test_idx:])
 h5f.create_dataset('sas_train', data=sas[:train_idx])
 h5f.create_dataset('sas_val', data=qed[train_idx:test_idx])
 h5f.create_dataset('sas_test', data=sas[test_idx:])
-h5f.create_dataset('charset', data=charset)
+# h5f.create_dataset('charset', data=charset)
 
 # 按9:1划分数据并编码
 # smiles = open('smiles(47).pkl', 'rb')
@@ -265,7 +266,7 @@ h5f.create_dataset('charset', data=charset)
 #
 # print(chr_num)
 
-# h5f = h5py.File('data/per_all_base64_49.h5', 'r')
+# h5f = h5py.File('data/per_all_base64_40(2).h5', 'r')
 # smiles_train = h5f['smiles_train'][:]
 # smiles_test = h5f['smiles_test'][:]
 # # charset = h5f['charset'][:]
@@ -305,17 +306,19 @@ h5f.create_dataset('charset', data=charset)
 
 
 # 验证
-# h5f = h5py.File('data/per_all_base64_50.h5', 'r')
+# h5f = h5py.File('data/per_all_50(120)(2).h5', 'r')
 # data_train = h5f['smiles_train'][:]
+# data_val = h5f['smiles_val'][:]
 # data_test = h5f['smiles_test'][:]
-# print(len(data_train), len(data_test), len(data_train[0]))
-# # charset = h5f['charset'][:]
+# print(len(data_train), len(data_val), len(data_test), len(data_train[0]))
+# charset = h5f['charset'][:]
+# length = len(data_train[0])
 # h5f.close()
 # model = MoleculeVAE()
-# if os.path.isfile('data/vae_model_base64_50(1).h5'):
-#     model.load(base64_charset, 'data/vae_model_base64_50(1).h5', latent_rep_size=196)
+# if os.path.isfile('data/vae_model_50(120)(2).h5'):
+#     model.load(charset, length, 'data/vae_model_50(120)(2).h5', latent_rep_size=196)
 # else:
-#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_base64_50(1).h5')
+#     raise ValueError("Model file %s doesn't exist" % 'data/vae_model_50(120)(2).h5')
 # data_test_vae = model.autoencoder.predict(data_test)
 # count0 = 0
 # count1 = 0
@@ -326,6 +329,7 @@ h5f.create_dataset('charset', data=charset)
 #     # print(item1)
 #     # break
 #     for j in range(len(item0)):
+#         # 补空格时用于跳出循环
 #         if item0[j] == 0:
 #             break
 #         count0 += 1

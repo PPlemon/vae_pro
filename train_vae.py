@@ -4,7 +4,8 @@ import random
 RANDOM_SEED = 1337
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
-
+import tensorflow as tf
+tf.set_random_seed(RANDOM_SEED)
 import os
 
 import argparse
@@ -36,7 +37,7 @@ def main():
         modelname = 'data/vae_model_' + str(i) + '(120)(2).h5'
         model = MoleculeVAE()
         if os.path.isfile(modelname):
-            model.load(charset, modelname, latent_rep_size=LATENT_DIM)
+            model.load(charset, length, modelname, latent_rep_size=LATENT_DIM)
         else:
             model.create(charset, max_length=length, latent_rep_size=LATENT_DIM)
 

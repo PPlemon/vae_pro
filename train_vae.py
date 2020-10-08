@@ -4,6 +4,7 @@ import random
 RANDOM_SEED = 1337
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
+
 import os
 
 import argparse
@@ -23,7 +24,7 @@ def main():
     # args = get_arguments()
     l = [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
     for i in l:
-        filename = 'data/per_all_' + str(i) + '(2).h5'
+        filename = 'data/per_all_' + str(i) + '(120)(2).h5'
         # data_train, data_test, charset = load_dataset('data/per_all_25000(index)h5')
         h5f = h5py.File(filename, 'r')
         data_train = h5f['smiles_train'][:]
@@ -32,7 +33,7 @@ def main():
         print(len(charset))
         print(charset)
         length = len(data_train[0])
-        modelname = 'data/vae_model_' + str(i) + '(2).h5'
+        modelname = 'data/vae_model_' + str(i) + '(120)(2).h5'
         model = MoleculeVAE()
         if os.path.isfile(modelname):
             model.load(charset, modelname, latent_rep_size=LATENT_DIM)
@@ -45,7 +46,7 @@ def main():
 
         early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-        TensorBoardname = "TensorBoard/vae_model_" + str(i) + '(2)'
+        TensorBoardname = "TensorBoard/vae_model_" + str(i) + '(120)(2)'
 
         tbCallBack = TensorBoard(log_dir=TensorBoardname)
 

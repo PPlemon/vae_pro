@@ -6,10 +6,8 @@ random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
-import os
-
 import argparse
-
+import os
 import h5py
 # import matplotlib.pyplot as plt
 from molecules.model import MoleculeVAE
@@ -34,10 +32,10 @@ def main():
         print(len(charset))
         print(charset)
         length = len(data_train[0])
-        modelname = 'data/vae_model_' + str(i) + '(120)(2).h5'
+        modelname = 'data/vae_model_' + str(i) + '(120)(3).h5'
         model = MoleculeVAE()
         if os.path.isfile(modelname):
-            model.load(charset, length, modelname, latent_rep_size=LATENT_DIM)
+            model.load(charset, modelname, latent_rep_size=LATENT_DIM)
         else:
             model.create(charset, max_length=length, latent_rep_size=LATENT_DIM)
 
@@ -47,14 +45,14 @@ def main():
 
         early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-        TensorBoardname = "TensorBoard/vae_model_" + str(i) + '(120)(2)'
+        TensorBoardname = "TensorBoard/vae_model_" + str(i) + '_120_3'
 
         tbCallBack = TensorBoard(log_dir=TensorBoardname)
 
         history = model.autoencoder.fit(
             data_train,
             data_train,
-            shuffle=False,
+            shuffle=True,
             epochs=NUM_EPOCHS,
             batch_size=BATCH_SIZE,
             callbacks=[check_pointer, reduce_lr, early_stopping, tbCallBack],

@@ -33,20 +33,21 @@ def main():
     # l = [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
     # for i in l:
     #     filename = 'data/per_all_base64_' + str(i) + '(120)(2).h5'
-    filename = 'data/per_all_base64_250000.h5'
+    filename = 'data/per_all_250000.h5'
     h5f = h5py.File(filename, 'r')
     data_train = h5f['smiles_train'][:]
     data_val = h5f['smiles_val'][:]
+    charset = h5f['charset'][:]
     model = MoleculeVAE()
     length = len(data_train[0])
     # modelname = 'vae_model_base64_' + str(i) + '(120)(3).h5'
-    modelname = 'data/vae_model_base64_250000.h5'
+    modelname = 'data/vae_model_250000.h5'
     print(modelname)
 
     if os.path.isfile(modelname):
-        model.load(base64_charset_120, length, modelname, latent_rep_size=latent_dim)
+        model.load(charset, length, modelname, latent_rep_size=latent_dim)
     else:
-        model.create(base64_charset_120, max_length=length, latent_rep_size=latent_dim)
+        model.create(charset, max_length=length, latent_rep_size=latent_dim)
     check_pointer = ModelCheckpoint(filepath=modelname, verbose=1, save_best_only=True)
 
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
@@ -55,7 +56,7 @@ def main():
 
     # TensorBoardname = "TensorBoard/vae_model_base64_" + str(i) + '_120_3'
 
-    TensorBoardname = 'TensorBoard/vae_model_base64_250000'
+    TensorBoardname = 'TensorBoard/vae_model_250000'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)
 

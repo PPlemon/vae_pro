@@ -47,7 +47,7 @@ steps = 50
 # data_test = np.array(ldamodeltest.doc_topic_[:])
 l = [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
 for i in l:
-    filename = 'data/per_all_base64_' + str(i) + '(120)(2).h5'
+    filename = 'data/per_all_' + str(i) + '(120)(2).h5'
     h5f = h5py.File(filename, 'r')
     # smiles_train_latent = h5f['smiles_train_latent'][:]
     # smiles_val_latent = h5f['smiles_val_latent'][:]
@@ -70,7 +70,7 @@ for i in l:
     # input_shape = (latent_rep_size,)
     input_shape = (len(smiles_train[0]), len(smiles_train[0][0]))
 
-    modelname = 'data/per_logp_model_base64_' + str(i) + '(120)(2).h5'
+    modelname = 'data/per_logp_model_' + str(i) + '(120)(2).h5'
 
     checkpointer = ModelCheckpoint(filepath=modelname, verbose=1, save_best_only=True)
 
@@ -78,7 +78,7 @@ for i in l:
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = "TensorBoard/per_all_base64_" + str(i) + '_120_2'
+    TensorBoardname = "TensorBoard/per_all_" + str(i) + '_120_2'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)
 

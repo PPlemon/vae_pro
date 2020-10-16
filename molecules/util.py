@@ -20,14 +20,8 @@ base64_charset = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M
                   '8', '9', '+', '/']
 base32_charset = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
                   'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7']
-def basevector(smiles):
-    num = []
-    smiles = smiles.ljust(60)
-    compressed = base64.b64encode(smiles.encode())
-    for c in compressed:
-        i = base64_dictionary[chr(c)]/64
-        num.append(i)
-    return num
+base32_charset_120 = ['=', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                      'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7']
 
 def base64encoder(smiles):
     return base64.b64encode(smiles.encode())
@@ -38,7 +32,9 @@ def base32encoder(smiles):
 def base64_vector(smiles):
     smiles_vector = []
     smiles = smiles.replace('\n', '')
+    print(smiles, len(smiles))
     compressed = base64.b64encode(smiles.encode())
+    print(compressed, len(compressed))
     for c in compressed:
         # 排除编码时加的额外=
         if c == 61:
@@ -56,7 +52,7 @@ def base64_vector_120(smiles):
     smiles = smiles.replace('\n', '')
     compressed = base64.b64encode(smiles.encode())
     # 编码后用=做填充字符
-    compressed = compressed.ljust(120, b'=')
+    compressed = compressed.ljust(192, b'=')
     for c in compressed:
         charset_vector = [0] * len(base64_charset_120)
         for index, value in enumerate(base64_charset_120):
@@ -70,8 +66,20 @@ def base32_vector(smiles):
     compressed = base64.b32encode(smiles.encode())
     # compressed = compressed.ljust(192)
     for c in compressed:
-        charset_vector = [0] * 33
+        charset_vector = [0] * len(base32_charset_120)
         for index, value in enumerate(base32_charset):
+            if chr(c) == value:
+                charset_vector[index] = 1
+        smiles_vector.append(charset_vector)
+    return smiles_vector
+def base32_vector_120(smiles):
+    smiles_vector = []
+    smiles = smiles.replace('\n', '')
+    compressed = base64.b32encode(smiles.encode())
+    compressed = compressed.ljust(192, b'=')
+    for c in compressed:
+        charset_vector = [0] * len(base32_charset_120)
+        for index, value in enumerate(base32_charset_120):
             if chr(c) == value:
                 charset_vector[index] = 1
         smiles_vector.append(charset_vector)
@@ -94,7 +102,7 @@ def vector(smiles, charset):
 def vector120(smiles, charset):
     smiles_vector = []
     smiles = smiles.replace('\n', '')
-    smiles = smiles.ljust(120)
+    smiles = smiles.ljust(192)
     for c in smiles:
         charset_vector = [0] * len(charset)
         for index, value in enumerate(charset):

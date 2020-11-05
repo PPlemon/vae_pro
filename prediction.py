@@ -12,7 +12,7 @@ import keras
 from keras.models import Sequential
 from sklearn.decomposition import PCA
 from keras.layers import Dense, Dropout, Flatten, BatchNormalization, Activation
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
+from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping, TensorBoard
 from keras.optimizers import RMSprop
 from sklearn.model_selection import train_test_split
 from functools import reduce
@@ -46,7 +46,7 @@ steps = 50
 # ldamodeltest = lda.LDA(n_topics=n_topics, n_iter=100, random_state=1) #初始化模型, n_iter迭代次数
 # ldamodeltest.fit(data_test)
 # data_test = np.array(ldamodeltest.doc_topic_[:])
-filename = 'data/per_all_base64_250000_1.h5'
+filename = 'data/per_all_250000_1.h5'
 h5f = h5py.File(filename, 'r')
 # smiles_train = h5f['smiles_train_latent'][:]
 # smiles_val = h5f['smiles_val_latent'][:]
@@ -64,7 +64,7 @@ for i in ['logp', 'qed', 'sas']:
     # input_shape = (latent_rep_size,)
     input_shape = (len(smiles_train[0]), len(smiles_train[0][0]))
     # input_shape = (len(smiles_train[0]),)
-    modelname = 'data/pro_' + i + 'onehot_base64_model_250000.h5'
+    modelname = 'data/pro_' + i + 'onehot_model_250000.h5'
 
     checkpointer = ModelCheckpoint(filepath=modelname, verbose=1, save_best_only=True)
 
@@ -72,6 +72,10 @@ for i in ['logp', 'qed', 'sas']:
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
+    TensorBoardname = 'TensorBoard/pro_' + i + 'onehot_model_250000'
+
+    tbCallBack = TensorBoard(log_dir=TensorBoardname)
+    
     model = Sequential()
     model.add(Flatten(name='flatten_1', input_shape=input_shape))
     for i in range(4):
@@ -112,7 +116,7 @@ for i in ['logp', 'qed', 'sas']:
                         batch_size=batch_size,
                         epochs=epochs,
                         verbose=1,
-                        callbacks=[checkpointer, early_stopping],
+                        callbacks=[checkpointer, early_stopping, tbCallBack],
                         validation_data=(smiles_val, pro_val))
 
 h5f.close()

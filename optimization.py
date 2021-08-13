@@ -12,17 +12,17 @@ from matplotlib import pyplot
 from scipy.optimize import minimize
 
 
-gp = joblib.load('model/Gaussian_model_2000.pkl')
+gp = joblib.load('/data/tp/data/model/Gaussian_model_2000.pkl')
 from molecules.predicted_vae_model import VAE_prop
 from rdkit import Chem
 
-h5f = h5py.File('data/per_all_250000.h5', 'r')
+h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
 charset2 = h5f['charset'][:]
 charset1 = []
 for i in charset2:
     charset1.append(i.decode())
 model = VAE_prop()
-modelname = 'model/predictor_vae_model_250000_12260707.h5'
+modelname = '/data/tp/data/model/predictor_vae_model_250000_12260707.h5'
 if os.path.isfile(modelname):
     model.load(35, 120, modelname, latent_rep_size=196)
 else:
@@ -40,13 +40,13 @@ def objective(x):
 def latent_to_smiles(solution):
     from molecules.predicted_vae_model import VAE_prop
     from rdkit import Chem
-    h5f = h5py.File('data/per_all_250000.h5', 'r')
+    h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
     charset2 = h5f['charset'][:]
     charset1 = []
     for i in charset2:
         charset1.append(i.decode())
     model = VAE_prop()
-    modelname = 'model/predictor_vae_model_250000_12260707.h5'
+    modelname = '/data/tp/data/model/predictor_vae_model_250000_12260707.h5'
     if os.path.isfile(modelname):
         model.load(35, 120, modelname, latent_rep_size=196)
     else:
@@ -62,44 +62,45 @@ def latent_to_smiles(solution):
         return sampled
 
 def main():
-    latent = open('data/data_train(2000)_latent.pkl', 'rb')
+    latent = open('/data/tp/data/data_train(2000)_latent.pkl', 'rb')
     latent = pickle.load(latent)
-    target = open('data/data_train(2000)_target.pkl', 'rb')
+    target = open('/data/tp/data/data_train(2000)_target.pkl', 'rb')
     target = pickle.load(target)
     t = []
     for i in target:
         t.append(i)
-    ind = t.index(max(t))
-    ind1 = t.index(min(t))
-    print('最大属性值：', t[ind])
-    # print(latent[ind])
-    print('最小属性值：', t[ind1])
-    # print(latent[ind1])
-    # pt = latent[0]
-    # for i in range(554, 2000):
-    pt = np.array(latent[2])
-    print(pt)
-    bounds = ()
-    for i in range(196):
-        t0 = min(latent[:][i])
-        t1 = max(latent[:][i])
-        # t0 = -0.1
-        # t1 = 0.1
-        # b = (-0.1, 0.1)
-        bounds = bounds + ({'type': 'ineq', 'fun': lambda x: x[i] - t0},
-                           {'type': 'ineq', 'fun': lambda x: -x[i] + t1})
-    print(bounds)
-    result = minimize(objective, pt, constraints=bounds, method='COBYLA')
-    # print('Status : %s' % result['message'])
-    # print('Total Evaluations: %d' % result['nfev'])
-    solution = result['x']
-    # evaluation = objective(solution)
-    print('找到的最大属性值：', gp.predict([solution])[0])
-    # print(gp.predict([latent[ind]])[0])
-    print(solution)
-    print(latent_to_smiles(solution))
+    res = []
+    #bounds = ()
+    #for i in range(196):
+    #    t0 = min(latent[:][i])
+    #    t1 = max(latent[:][i])
+    #    bounds = bounds + ({'type': 'ineq', 'fun': lambda x: x[i] - t0},
+    #                       {'type': 'ineq', 'fun': lambda x: -x[i] + t1})
+    #print(bounds)
+    for j in range(len(latent)):
+        temp = []
+        pt = np.array(latent[j])
+        result = minimize(objective, pt, method='COBYLA')
+        # print('Status : %s' % result['message'])
+        # print('Total Evaluations: %d' % result['nfev'])
+        solution = result['x']
+        # evaluation = objective(solution)
+        #print('找到的最大属性值：', gp.predict([solution])[0])
+        # print(gp.predict([latent[ind]])[0])
+        #print(solution)
+        # print(latent_to_smiles(solution))
+        sampled = model.decoder.predict(solution.reshape(1, 196)).argmax(axis=2)[0]
+        sampled = decode_smiles_from_indexes(sampled, charset1)
+        m = Chem.MolFromSmiles(sampled)
+        if m != None:
+            temp.append(j)
+            temp.append(solution)
+            temp.append(gp.predict([solution])[0])
+            res.append(temp)
 
-
+    optimization = open('/data/tp/data/CVAE_train(2000)_optimization_result.pkl', 'wb')
+    pickle.dump(res, optimization)
+    optimization.close()
     # solution = np.array(solution)
     # ind2 = np.where(latent == solution)
     #

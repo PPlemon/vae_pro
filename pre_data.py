@@ -34,7 +34,7 @@ base32_charset_120 = ['=', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'
                       'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7']
 
 
-from molecules.util import base32_vector, vector, vector120, base64_vector, base64_vector_120, base32_vector_120
+from molecules.util import base32_vector, vector, vector120, base64_vector, base64_vector_120, base32_vector_120, get_w2v_vector, get_w2v_base64_vector
 # 按8:1:1划分数据并编码
 # smiles = open('smiles(40).pkl', 'rb')
 # smiles = pickle.load(smiles)
@@ -92,25 +92,28 @@ from molecules.util import base32_vector, vector, vector120, base64_vector, base
 
 # 数据编码
 def data_encoder(t, train_idx, val_idx, test_idx):
+    w2v_vector = open('data/w2v_vector_30_new_w40.pkl', 'rb')
+    w2v_vector = pickle.load(w2v_vector)
+
     smiles_train = []
     smiles_val = []
     smiles_test = []
     if t == 0:
-        charset1 = list(reduce(lambda x, y: set(y) | x, smiles, set()))
-        charset1.insert(0, ' ')
-        print(charset1)
-        charset = []
-        for i in charset1:
-            charset.append(i.encode())
-        print(charset)
+        #charset1 = list(reduce(lambda x, y: set(y) | x, smiles, set()))
+        #charset1.insert(0, ' ')
+        #print(charset1)
+        #charset = []
+        #for i in charset1:
+        #    charset.append(i.encode())
+        #print(charset)
         for s0 in smiles[train_idx]:
-            smiles_train.append(vector120(s0, charset1))
+            smiles_train.append(get_w2v_vector(s0, w2v_vector))
         for s1 in smiles[val_idx]:
-            smiles_val.append(vector120(s1, charset1))
+            smiles_val.append(get_w2v_vector(s1, w2v_vector))
         for s2 in smiles[test_idx]:
-            smiles_test.append(vector120(s2, charset1))
+            smiles_test.append(get_w2v_vector(s2, w2v_vector))
         print(smiles_test[0][0])
-        h5f = h5py.File('data/per_all_250000_2.h5', 'w')
+        h5f = h5py.File('/data/tp/data/per_all_w2v_30(40)_new_250000.h5', 'w')
         h5f.create_dataset('smiles_train', data=smiles_train)
         h5f.create_dataset('smiles_val', data=smiles_val)
         h5f.create_dataset('smiles_test', data=smiles_test)
@@ -123,7 +126,7 @@ def data_encoder(t, train_idx, val_idx, test_idx):
         h5f.create_dataset('sas_train', data=sas[train_idx])
         h5f.create_dataset('sas_val', data=sas[val_idx])
         h5f.create_dataset('sas_test', data=sas[test_idx])
-        h5f.create_dataset('charset', data=charset)
+        #h5f.create_dataset('charset', data=charset)
         h5f.close()
     if t == 1:
         for s0 in smiles[train_idx]:
@@ -133,7 +136,7 @@ def data_encoder(t, train_idx, val_idx, test_idx):
         for s2 in smiles[test_idx]:
             smiles_test.append(base64_vector_120(s2))
         print(smiles_test[0][0])
-        h5f = h5py.File('data/per_all_base64_250000_2.h5', 'w')
+        h5f = h5py.File('/data/tp/data/per_all_base64_250000.h5', 'w')
         h5f.create_dataset('smiles_train', data=smiles_train)
         h5f.create_dataset('smiles_val', data=smiles_val)
         h5f.create_dataset('smiles_test', data=smiles_test)
@@ -155,7 +158,7 @@ def data_encoder(t, train_idx, val_idx, test_idx):
         for s2 in smiles[test_idx]:
             smiles_test.append(base32_vector_120(s2))
         print(smiles_test[0][0])
-        h5f = h5py.File('data/per_all_base32_250000_2.h5', 'w')
+        h5f = h5py.File('/data/tp/data/per_all_base32_250000.h5', 'w')
         h5f.create_dataset('smiles_train', data=smiles_train)
         h5f.create_dataset('smiles_val', data=smiles_val)
         h5f.create_dataset('smiles_test', data=smiles_test)
@@ -169,7 +172,7 @@ def data_encoder(t, train_idx, val_idx, test_idx):
         h5f.create_dataset('sas_val', data=sas[val_idx])
         h5f.create_dataset('sas_test', data=sas[test_idx])
         h5f.close()
-data = pd.read_hdf('data/zinc-1.h5', 'table')
+data = pd.read_hdf('/data/tp/data/zinc-1.h5', 'table')
 smiles = data['smiles']
 logp = data['logp']
 qed = data['qed']
@@ -177,7 +180,7 @@ sas = data['sas']
 train_idx, val_test_idx = map(np.array, train_test_split(smiles.index, test_size = 0.20))
 val_idx, test_idx = map(np.array, train_test_split(val_test_idx, test_size = 0.50))
 print(len(train_idx), len(val_test_idx), len(val_idx), len(test_idx))
-for i in range(3):
+for i in range(1):
     data_encoder(i, train_idx, val_idx, test_idx)
 
 

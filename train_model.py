@@ -1,11 +1,18 @@
 import numpy as np
 import random
-RANDOM_SEED = 1337
+RANDOM_SEED = 12260707
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ['PYTHONHASHSEED'] = 'RANDOM_SEED'
+session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+from keras import backend as K
+tf.set_random_seed(RANDOM_SEED)
+sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+K.set_session(sess)
 import h5py
 import base64
 from functools import reduce
@@ -33,7 +40,7 @@ def main():
     # l = [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
     # for i in l:
     #     filename = 'data/per_all_base64_' + str(i) + '(120)(2).h5'
-    filename = 'data/per_all_250000.h5'
+    filename = '/data/tp/data/per_all_250000.h5'
     h5f = h5py.File(filename, 'r')
     data_train = h5f['smiles_train'][:]
     data_val = h5f['smiles_val'][:]
@@ -41,7 +48,7 @@ def main():
     model = MoleculeVAE()
     length = len(data_train[0])
     # modelname = 'vae_model_base64_' + str(i) + '(120)(3).h5'
-    modelname = 'data/vae_model_250000.h5'
+    modelname = '/data/tp/data/model/vae_model_250000_12260707.h5'
     print(modelname)
 
     if os.path.isfile(modelname):
@@ -56,7 +63,7 @@ def main():
 
     # TensorBoardname = "TensorBoard/vae_model_base64_" + str(i) + '_120_3'
 
-    TensorBoardname = 'TensorBoard/vae_model_250000'
+    TensorBoardname = '/data/tp/data/TensorBoard/vae_model_250000_12260707'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)
 

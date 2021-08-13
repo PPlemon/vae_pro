@@ -52,7 +52,7 @@ def base64_vector_120(smiles):
     smiles = smiles.replace('\n', '')
     compressed = base64.b64encode(smiles.encode())
     # 编码后用=做填充字符
-    compressed = compressed.ljust(192, b'=')
+    compressed = compressed.ljust(150, b'=')
     for c in compressed:
         charset_vector = [0] * len(base64_charset_120)
         for index, value in enumerate(base64_charset_120):
@@ -102,7 +102,7 @@ def vector(smiles, charset):
 def vector120(smiles, charset):
     smiles_vector = []
     smiles = smiles.replace('\n', '')
-    smiles = smiles.ljust(192)
+    smiles = smiles.ljust(120)
     for c in smiles:
         charset_vector = [0] * len(charset)
         for index, value in enumerate(charset):
@@ -120,5 +120,24 @@ def index_vector(smiles, charset):
         for index, value in enumerate(charset):
             if c == value:
                 charset_vector[index] = 1
+        smiles_vector.append(charset_vector)
+    return smiles_vector
+
+def get_w2v_vector(smiles, dic):
+    smiles_vector = []
+    smiles = smiles.replace('\n', '')
+    smiles = smiles.ljust(120)
+    for c in smiles:
+        charset_vector = dic[c]
+        smiles_vector.append(charset_vector)
+    return smiles_vector
+
+def get_w2v_base64_vector(smiles, dic):
+    smiles_vector = []
+    smiles = smiles.replace('\n', '')
+    smiles = base64.b64encode(smiles.encode()).decode()
+    smiles = smiles.ljust(150)
+    for c in smiles:
+        charset_vector = dic[c]                                                                                                                                             
         smiles_vector.append(charset_vector)
     return smiles_vector

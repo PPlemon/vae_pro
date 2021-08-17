@@ -21,7 +21,7 @@ def score_mae(output, target):
 
 def main():
 
-    h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
+    h5f = h5py.File('/data/tp/data/per_all_w2v_30_new_250000.h5', 'r')
     # data_train = h5f['smiles_train'][:]
     # data_val = h5f['smiles_val'][:]
     data_train = h5f['smiles_train'][:2000]
@@ -37,7 +37,7 @@ def main():
 
     model = VAE_prop()
 
-    modelname = '/data/tp/data/model/predictor_vae_model_250000_12260707.h5'
+    modelname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(2).h5'
 
     if os.path.isfile(modelname):
         model.load(charset, length, modelname, latent_rep_size=196)
@@ -45,11 +45,11 @@ def main():
         raise ValueError("Model file %s doesn't exist" % modelname)
     data_train_vae = model.encoder.predict(data_train)
 
-    latent = open('/data/tp/data/data_train(2000)_latent.pkl', 'wb')
+    latent = open('/data/tp/data/data_train(2000)_w2v_latent.pkl', 'wb')
     pickle.dump(data_train_vae, latent)
     latent.close()
 
-    target = open('/data/tp/data/data_train(2000)_target.pkl', 'wb')
+    target = open('/data/tp/data/data_train(2000)_w2v_target.pkl', 'wb')
     pickle.dump(target_train, target)
     target.close()
 
@@ -58,7 +58,7 @@ def main():
 
     model_gp.fit(data_train_vae, target_train)
 
-    joblib.dump(model_gp, '/data/tp/data/model/Gaussian_model_2000.pkl')
+    joblib.dump(model_gp, '/data/tp/data/model/Gaussian_model_w2v_2000.pkl')
 
     y_pred = model_gp.predict(data_train_vae)
 

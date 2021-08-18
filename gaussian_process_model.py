@@ -21,7 +21,7 @@ def score_mae(output, target):
 
 def main():
 
-    h5f = h5py.File('/data/tp/data/per_all_w2v_30_new_250000.h5', 'r')
+    h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
     # data_train = h5f['smiles_train'][:]
     # data_val = h5f['smiles_val'][:]
     data_train = h5f['smiles_train'][:2000]
@@ -37,7 +37,7 @@ def main():
 
     model = VAE_prop()
 
-    modelname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(2).h5'
+    modelname = '/data/tp/data/model/predictor_vae_model_250000_12260707(5qed-sas).h5'
 
     if os.path.isfile(modelname):
         model.load(charset, length, modelname, latent_rep_size=196)
@@ -45,26 +45,33 @@ def main():
         raise ValueError("Model file %s doesn't exist" % modelname)
     data_train_vae = model.encoder.predict(data_train)
 
-    latent = open('/data/tp/data/data_train(2000)_w2v_latent.pkl', 'wb')
+    latent = open('/data/tp/data/data_train(2000)_latent(5qed-sas).pkl', 'wb')
     pickle.dump(data_train_vae, latent)
     latent.close()
 
-    target = open('/data/tp/data/data_train(2000)_w2v_target.pkl', 'wb')
+    target = open('/data/tp/data/data_train(2000)_target(5qed-sas).pkl', 'wb')
     pickle.dump(target_train, target)
     target.close()
 
-
+    train_data = data_train_vae[:]
+    train_target = target_train[:]
+    # test_data = data_train_vae[:]
+    # test_target = target_train[:]
     model_gp = gaussian_process.GaussianProcessRegressor(n_restarts_optimizer=200)
 
-    model_gp.fit(data_train_vae, target_train)
+    model_gp.fit(train_data, train_target)
 
-    joblib.dump(model_gp, '/data/tp/data/model/Gaussian_model_w2v_2000.pkl')
+    joblib.dump(model_gp, '/data/tp/data/model/Gaussian_model_2000_5qed-sas.pkl')
 
-    y_pred = model_gp.predict(data_train_vae)
+    train_pred = model_gp.predict(train_data)
 
-    score = score_mae(y_pred, target_train)
+    train_score = score_mae(train_pred, train_target)
+    print('训练精度：', train_score)
+    # test_pred = model_gp.predict(test_data)
+    #
+    # test_score = score_mae(test_pred, test_target)
+    # print('测试精度：', test_score)
 
-    print(score)
 
 if __name__ == '__main__':
     main()

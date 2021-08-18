@@ -1,6 +1,6 @@
 import numpy as np
 import random
-RANDOM_SEED = 12260707
+RANDOM_SEED = 42
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import tensorflow as tf
@@ -27,14 +27,16 @@ latent_dim = 196
 epochs = 1000
 
 def main():
-    filename = '/data/tp/data/per_all_250000.h5'
+    filename = '/data/tp/data/per_all_w2v_30_new_base64_250000.h5'
     h5f = h5py.File(filename, 'r')
     data_train = h5f['smiles_train'][:]
     data_val = h5f['smiles_val'][:]
-    qed_train = h5f['qed_train'][:]
-    qed_val = h5f['qed_val'][:]
-    sas_train = h5f['sas_train'][:]
-    sas_val = h5f['sas_val'][:]
+    logp_train = h5f['logp_train'][:]
+    logp_val = h5f['logp_val'][:]
+    #qed_train = h5f['qed_train'][:]
+    #qed_val = h5f['qed_val'][:]
+    #sas_train = h5f['sas_train'][:]
+    #sas_val = h5f['sas_val'][:]
     #target_train = np.array(qed_train)*5 - np.array(sas_train)
     #target_val = np.array(qed_val)*5 - np.array(sas_val)
     
@@ -42,31 +44,31 @@ def main():
     model = VAE_prop()
     length = len(data_train[0])
     charset = len(data_train[0][0])
-    predictorname = '/data/tp/data/model/predictor_vae_model_250000_12260707(qed).h5'
+    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_base64_250000_42(logp).h5'
     if os.path.isfile(predictorname):
         model.load(charset, length, predictorname, latent_rep_size=latent_dim)
     else:
         model.create(charset, max_length=length, latent_rep_size=latent_dim)
 
-    #check_pointer = ModelCheckpoint(filepath=predictorname, verbose=1, save_best_only=True)
+    check_pointer = ModelCheckpoint(filepath=predictorname, verbose=1, save_best_only=True)
 
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'
+    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_30_new_base64_250000_42(logp)'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)
 
     print(data_train[0])
     history = model.vae_predictor.fit(
         data_train,
-        [data_train, qed_train],
+        [data_train, logp_train],
         shuffle=True,
         epochs=epochs,
         batch_size=batch_size,
         callbacks=[reduce_lr, early_stopping, tbCallBack],
-        validation_data=(data_val, [data_val, qed_val])
+        validation_data=(data_val, [data_val, logp_val])
     )
 
     model.save(predictorname)

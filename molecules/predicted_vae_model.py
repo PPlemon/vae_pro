@@ -66,8 +66,8 @@ class VAE_prop():
         def vae_loss(x, decoded_mean):
             x = K.flatten(x)
             x_decoded_mean = K.flatten(decoded_mean)
-            #xent_loss = max_length * objectives.mse(x, x_decoded_mean)   # 重构loss,
-            xent_loss = max_length * objectives.binary_crossentropy(x, x_decoded_mean)   # 重构loss,
+            xent_loss = max_length * objectives.mse(x, x_decoded_mean)   # 重构loss,
+            #xent_loss = max_length * objectives.binary_crossentropy(x, x_decoded_mean)   # 重构loss,
             # binary_crossentropy是对数误差
             kl_loss = - 0.5 * K.mean(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis = -1)   # 求kl散度，即kl loss
             # K.mean求均值。K.square求平方

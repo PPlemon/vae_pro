@@ -7,6 +7,7 @@ import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
 from molecules.predicted_vae_model import VAE_prop
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import h5py
 import pickle
 import base64
@@ -24,10 +25,11 @@ length = len(data_test[0])
 charset = len(data_test[0][0])
 h5f.close()
 model = VAE_prop()
-if os.path.isfile('/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(2).h5'):
-    model.load(charset, length, '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(2).h5', latent_rep_size=196)
+modelname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_707(5qed-sas).h5'
+if os.path.isfile(modelname):
+    model.load(charset, length, modelname, latent_rep_size=196)
 else:
-    raise ValueError("Model file %s doesn't exist" % '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(2).h5')
+    raise ValueError("Model file %s doesn't exist" % modelname)
 data_test_vae = model.vae_predictor.predict(data_test)[0]
 
 model = load_model('model/word2vec.h5')

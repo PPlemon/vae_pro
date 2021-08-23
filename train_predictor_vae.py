@@ -38,14 +38,14 @@ def main():
     qed_val = h5f['qed_val'][:]
     sas_train = h5f['sas_train'][:]
     sas_val = h5f['sas_val'][:]
-    target_train = np.array(qed_train)*5 - np.array(sas_train)
-    target_val = np.array(qed_val)*5 - np.array(sas_val)
+    #target_train = np.array(qed_train)*5 - np.array(sas_train)
+    #target_val = np.array(qed_val)*5 - np.array(sas_val)
     
     # charset = h5f['charset'][:]
     model = VAE_prop()
     length = len(data_train[0])
     charset = len(data_train[0][0])
-    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_707(5*qed-sas).h5'
+    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_707(qed).h5'
     #predictorname = '/data/tp/data/model/predictor_vae_model_250000_12260707(qed).h5'
     if os.path.isfile(predictorname):
         model.load(charset, length, predictorname, latent_rep_size=latent_dim)
@@ -58,7 +58,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_30_new_250000_707(5*qed-sas)'
+    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_30_new_250000_707(qed)'
     #TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)
@@ -66,12 +66,12 @@ def main():
     print(data_train[0])
     history = model.vae_predictor.fit(
         data_train,
-        [data_train, target_train],
+        [data_train, qed_train],
         shuffle=True,
         epochs=epochs,
         batch_size=batch_size,
         callbacks=[reduce_lr, early_stopping, tbCallBack],
-        validation_data=(data_val, [data_val, target_val])
+        validation_data=(data_val, [data_val, qed_val])
     )
 
     model.save(predictorname)

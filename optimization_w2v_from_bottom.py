@@ -5,6 +5,7 @@ random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import h5py
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import joblib
 import pickle
 from sklearn.decomposition import PCA
@@ -38,7 +39,7 @@ def most_similar(w):
     sims = np.dot(normalized_embeddings, w)
     sort = sims.argsort()[::-1]
     sort = sort[sort > 0]
-    return [(id2word[i],sims[i]) for i in sort[:1]]
+    return [(id2word[i], sims[i]) for i in sort[:1]]
 
 def objective(x):
     res = []
@@ -47,13 +48,13 @@ def objective(x):
     return gp.predict([res])[0]*-1
 
 def main():
-    latent = open('/data/tp/data/data_train(2000)_w2v_latent(5qed-sas).pkl', 'rb')
-    latent = pickle.load(latent)
-    target = open('/data/tp/data/data_train(2000)_w2v_target(5qed-sas).pkl', 'rb')
-    target = pickle.load(target)
-    t = []
-    for i in target:
-        t.append(i)
+    # latent = open('/data/tp/data/data_train(2000)_w2v_latent(5qed-sas).pkl', 'rb')
+    # latent = pickle.load(latent)
+    # target = open('/data/tp/data/data_train(2000)_w2v_target(5qed-sas).pkl', 'rb')
+    # target = pickle.load(target)
+    data = open('/data/tp/data/bottom_mol_w2v(5qed-sas).pkl', 'rb')
+    data = pickle.load(data)
+
     res = []
     #bounds = ()
     #for i in range(196):
@@ -62,9 +63,9 @@ def main():
     #    bounds = bounds + ({'type': 'ineq', 'fun': lambda x: x[i] - t0},
     #                       {'type': 'ineq', 'fun': lambda x: -x[i] + t1})
     #print(bounds)
-    for j in range(len(latent)):
+    for j in range(len(data)):
         temp = []
-        pt = np.array(latent[j])
+        pt = data[j][2]
         result = minimize(objective, pt, method='COBYLA')
         # print('Status : %s' % result['message'])
         # print('Total Evaluations: %d' % result['nfev'])
@@ -81,12 +82,18 @@ def main():
         sampled = s.strip()
         m = Chem.MolFromSmiles(sampled)
         if m != None:
+            print('起点：')
+            print('属性值：', data[j][1])
+            print('终点：', sampled)
+            print('高斯预测属性值：', gp.predict(solution)[0])
+            print('联合模型预测属性值：', model.predictor.predict(solution.reshape(1, 196))[0])
+            print('有效\n')
             temp.append(j)
             temp.append(solution)
             temp.append(gp.predict([solution])[0])
             res.append(temp)
 
-    optimization = open('/data/tp/data/w2v_vecVAE_train(2000)_optimization_result(5qed-sas).pkl', 'wb')
+    optimization = open('/data/tp/data/w2v_vecVAE_optimization_result_from_bottom(5qed-sas).pkl', 'wb')
     pickle.dump(res, optimization)
     optimization.close()
     # solution = np.array(solution)

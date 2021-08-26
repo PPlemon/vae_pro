@@ -7,7 +7,7 @@ import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
 from molecules.predicted_vae_model import VAE_prop
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import h5py
 import pickle
 import base64

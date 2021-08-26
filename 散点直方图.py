@@ -7,6 +7,7 @@ import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
 from molecules.predicted_vae_model import VAE_prop
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import h5py
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -15,6 +16,7 @@ from sklearn.manifold import TSNE
 
 # 验证
 h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
+#h5f = h5py.File('/data/tp/data/per_all_w2v_30_new_250000.h5', 'r')
 data_train = h5f['smiles_train'][:]
 data_val = h5f['smiles_val'][:]
 data_test = h5f['smiles_test'][:]
@@ -31,15 +33,15 @@ logp = []
 for i in range(len(data_train)):
     data.append(data_train[i])
     logp.append(logp_train[i])
-for j in range(len(data_test)):
-    data.append(data_test[j])
-    logp.append(logp_test[j])
-for k in range(len(data_val)):
-    data.append(data_val[k])
-    logp.append(logp_val[k])
+#for j in range(len(data_test)):
+#    data.append(data_test[j])
+#    logp.append(logp_test[j])
+#for k in range(len(data_val)):
+#    data.append(data_val[k])
+#    logp.append(logp_val[k])
 data = np.array(data)
 logp = np.array(logp)
-
+print(len(data))
 # data_test = data_train + data_val + data_test
 # logp_test = logp_train + logp_val + logp_test
 # print(len(data_test), len(logp_test))
@@ -47,7 +49,8 @@ logp = np.array(logp)
 h5f.close()
 model = VAE_prop()
 
-modelname = '/data/tp/data/model/predictor_vae_model_250000_12260707.h5'
+modelname = '/data/tp/data/model/predictor_vae_model_250000_12260707(5qed-sas).h5'
+#modelname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(2).h5'
 
 if os.path.isfile(modelname):
     model.load(charset, length, modelname, latent_rep_size=196)
@@ -101,5 +104,5 @@ a = ax2.scatter(x, y, c=logp, cmap='YlGnBu', marker='.', s=1)
 
 fig.colorbar(a, ax=ax2)
 
-plt.savefig(fname="predictoe_vae_alldata_latent.png",figsize=[5.5,4.5])
+plt.savefig(fname="predictoe_vae_alldata_latent(5qed-sas).png",figsize=[5.5,4.5])
 plt.show()

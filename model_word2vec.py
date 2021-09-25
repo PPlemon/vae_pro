@@ -138,9 +138,8 @@ if __name__ == '__main__':
     #目前是以句子为单位作为batch，多少个句子作为一个batch（这样才容易估计训练过程中的steps参数，另外注意，样本数是正比于字数的。）
     
     data,sentences = getdata(smiles) #读原始数据
+    
     nb_sentence,id2word,word2id,nb_word,subsamples,charset = bulid_dic(sentences) #建字典
-    #print(nb_word)
-    #print(charset)
     ipt,opt = data_generator(word2id,subsamples,data) #构造训练数据
     model = build_w2vm(word_size,window,nb_word,nb_negative) #搭模型
     model.fit(  ipt,opt, 
@@ -154,10 +153,6 @@ if __name__ == '__main__':
     #filename = '/data/tp/data/per_all_250000.h5'
     #h5f = h5py.File(filename, 'r')
     #charset = h5f['charset'][:]
-    base64_charset_120 = [' ', '=', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                      'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-                      'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
-                      '8', '9', '+', '/']
     #print(charset, len(charset))
     w2v_vector = {}
     for s in charset:

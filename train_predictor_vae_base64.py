@@ -19,7 +19,7 @@ from functools import reduce
 import matplotlib.pyplot as plt
 import pandas
 from sklearn.model_selection import train_test_split
-from molecules.predicted_vae_model import VAE_prop
+from molecules.predicted_vae_model_w2v_base64 import VAE_prop
 from molecules.util import base32_vector, base64_vector
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping, TensorBoard
 batch_size = 128
@@ -56,7 +56,7 @@ def main():
 
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
 
-    early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=2)
 
     TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_30_new_base64_250000_707(logp)'
     #TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'

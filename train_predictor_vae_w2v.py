@@ -1,6 +1,6 @@
 import numpy as np
 import random
-RANDOM_SEED = 42
+RANDOM_SEED = 12260707
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import tensorflow as tf
@@ -19,7 +19,7 @@ from functools import reduce
 import matplotlib.pyplot as plt
 import pandas
 from sklearn.model_selection import train_test_split
-from molecules.predicted_vae_model import VAE_prop
+from molecules.predicted_vae_model_w2v import VAE_prop
 from molecules.util import base32_vector, base64_vector
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping, TensorBoard
 batch_size = 128
@@ -27,8 +27,8 @@ latent_dim = 196
 epochs = 1000
 
 def main():
-    #filename = '/data/tp/data/per_all_w2v_30_new_250000.h5'
-    filename = '/data/tp/data/per_all_250000.h5'
+    filename = '/data/tp/data/per_all_w2v_30_new_250000.h5'
+    #filename = '/data/tp/data/per_all_250000.h5'
     h5f = h5py.File(filename, 'r')
     data_train = h5f['smiles_train'][:]
     data_val = h5f['smiles_val'][:]
@@ -38,14 +38,14 @@ def main():
     qed_val = h5f['qed_val'][:]
     sas_train = h5f['sas_train'][:]
     sas_val = h5f['sas_val'][:]
-    #target_train = np.array(qed_train)*5 - np.array(sas_train)
-    #target_val = np.array(qed_val)*5 - np.array(sas_val)
+    target_train = np.array(qed_train)*5 - np.array(sas_train)
+    target_val = np.array(qed_val)*5 - np.array(sas_val)
     
     # charset = h5f['charset'][:]
     model = VAE_prop()
     length = len(data_train[0])
     charset = len(data_train[0][0])
-    predictorname = '/data/tp/data/model/predictor_vae_model_250000_42(qed)(std=1).h5'
+    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(5qed-sas)(linear).h5'
     #predictorname = '/data/tp/data/model/predictor_vae_model_250000_12260707(qed).h5'
     if os.path.isfile(predictorname):
         model.load(charset, length, predictorname, latent_rep_size=latent_dim)
@@ -58,7 +58,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_42(qed)(std=1)'
+    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_30_new_250000_12260707(5qed-sas)(linear)'
     #TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)
@@ -66,12 +66,12 @@ def main():
     print(data_train[0])
     history = model.vae_predictor.fit(
         data_train,
-        [data_train, qed_train],
+        [data_train, target_train],
         shuffle=True,
         epochs=epochs,
         batch_size=batch_size,
         callbacks=[reduce_lr, early_stopping, tbCallBack],
-        validation_data=(data_val, [data_val, qed_val])
+        validation_data=(data_val, [data_val, target_val])
     )
 
     model.save(predictorname)

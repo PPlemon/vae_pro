@@ -19,13 +19,13 @@ class VAE_prop():
                weights_file=None,
                ):
         charset_length = charset
-        epsilon_std = 1
+        epsilon_std = 0.01
         def sampling(args):   # 采样   std标准差
             z_mean_, z_log_var_ = args
             batch_size = K.shape(z_mean_)[0]                   #返回张量形状
             epsilon = K.random_normal(shape=(batch_size, latent_rep_size), mean=0., stddev = epsilon_std)  # 噪声
-            #return z_mean_ + K.exp(z_log_var_ / 2) * epsilon
-            return z_mean_
+            return z_mean_ + K.exp(z_log_var_ / 2) * epsilon
+            #return z_mean_
 
         x = Input(shape=(max_length, charset_length))
         z_mean, z_log_var = self._buildEncoder(x, latent_rep_size)
@@ -67,8 +67,8 @@ class VAE_prop():
         def vae_loss(x, decoded_mean):
             x = K.flatten(x)
             x_decoded_mean = K.flatten(decoded_mean)
-            #xent_loss = max_length * objectives.mse(x, x_decoded_mean)   # 重构loss,
-            xent_loss = max_length * objectives.binary_crossentropy(x, x_decoded_mean)   # 重构loss,
+            xent_loss = max_length * objectives.mse(x, x_decoded_mean)   # 重构loss,
+            #xent_loss = max_length * objectives.binary_crossentropy(x, x_decoded_mean)   # 重构loss,
             # binary_crossentropy是对数误差
             kl_loss = - 0.5 * K.mean(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis = -1)   # 求kl散度，即kl loss
             # K.mean求均值。K.square求平方
@@ -112,7 +112,7 @@ class VAE_prop():
         h = GRU(488, return_sequences=True, name='gru_1')(h)
         h = GRU(488, return_sequences=True, name='gru_2')(h)
         h = GRU(488, return_sequences=True, name='gru_3')(h)
-        return TimeDistributed(Dense(charset_length, activation='softmax'), name='decoded_mean')(h)
+        return TimeDistributed(Dense(charset_length, activation='tanh'), name='decoded_mean')(h)
 
     def _buildPredictor(self, z):
         h = Dense(36, name='dense0', activation='tanh')(z)

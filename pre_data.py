@@ -28,10 +28,6 @@ base64_charset_120 = ['=', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'
                       'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
                       'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
                       '8', '9', '+', '/']
-base32_charset = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                  'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7']
-base32_charset_120 = ['=', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                      'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5', '6', '7']
 
 
 from molecules.util import base32_vector, vector, vector120, base64_vector, base64_vector_120, base32_vector_120, get_w2v_vector, get_w2v_base64_vector
@@ -92,7 +88,7 @@ from molecules.util import base32_vector, vector, vector120, base64_vector, base
 
 # 数据编码
 def data_encoder(t, train_idx, val_idx, test_idx):
-    w2v_vector = open('data/w2v_vector_30_new_w40.pkl', 'rb')
+    w2v_vector = open('data/glove_vector_30.pkl', 'rb')
     w2v_vector = pickle.load(w2v_vector)
 
     smiles_train = []
@@ -113,7 +109,7 @@ def data_encoder(t, train_idx, val_idx, test_idx):
         for s2 in smiles[test_idx]:
             smiles_test.append(get_w2v_vector(s2, w2v_vector))
         print(smiles_test[0][0])
-        h5f = h5py.File('/data/tp/data/per_all_w2v_30(40)_new_250000.h5', 'w')
+        h5f = h5py.File('/data/tp/data/per_all_glove_30_250000.h5', 'w')
         h5f.create_dataset('smiles_train', data=smiles_train)
         h5f.create_dataset('smiles_val', data=smiles_val)
         h5f.create_dataset('smiles_test', data=smiles_test)

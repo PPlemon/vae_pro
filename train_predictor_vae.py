@@ -1,12 +1,12 @@
 import numpy as np
 import random
-RANDOM_SEED = 42
+RANDOM_SEED = 0
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ['PYTHONHASHSEED'] = 'RANDOM_SEED'
 session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
 from keras import backend as K
@@ -38,14 +38,14 @@ def main():
     qed_val = h5f['qed_val'][:]
     sas_train = h5f['sas_train'][:]
     sas_val = h5f['sas_val'][:]
-    #target_train = np.array(qed_train)*5 - np.array(sas_train)
-    #target_val = np.array(qed_val)*5 - np.array(sas_val)
+    target_train = np.array(qed_train)*5 - np.array(sas_train)
+    target_val = np.array(qed_val)*5 - np.array(sas_val)
     
     # charset = h5f['charset'][:]
     model = VAE_prop()
     length = len(data_train[0])
     charset = len(data_train[0][0])
-    predictorname = '/data/tp/data/model/predictor_vae_model_250000_42(qed)(std=1).h5'
+    predictorname = '/data/tp/data/model/predictor_vae_model_250000_0(5qed-sas)(std=1).h5'
     #predictorname = '/data/tp/data/model/predictor_vae_model_250000_12260707(qed).h5'
     if os.path.isfile(predictorname):
         model.load(charset, length, predictorname, latent_rep_size=latent_dim)
@@ -58,7 +58,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_42(qed)(std=1)'
+    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_0(5qed-sas)(std=1)'
     #TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)
@@ -66,12 +66,12 @@ def main():
     print(data_train[0])
     history = model.vae_predictor.fit(
         data_train,
-        [data_train, qed_train],
+        [data_train, target_train],
         shuffle=True,
         epochs=epochs,
         batch_size=batch_size,
         callbacks=[reduce_lr, early_stopping, tbCallBack],
-        validation_data=(data_val, [data_val, qed_val])
+        validation_data=(data_val, [data_val, target_val])
     )
 
     model.save(predictorname)

@@ -112,7 +112,7 @@ class VAE_prop():
         h = GRU(488, return_sequences=True, name='gru_1')(h)
         h = GRU(488, return_sequences=True, name='gru_2')(h)
         h = GRU(488, return_sequences=True, name='gru_3')(h)
-        return TimeDistributed(Dense(charset_length), name='decoded_mean')(h)
+        return TimeDistributed(Dense(charset_length, activation='linear'), name='decoded_mean')(h)
 
     def _buildPredictor(self, z):
         h = Dense(36, name='dense0', activation='tanh')(z)

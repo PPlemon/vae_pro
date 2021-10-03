@@ -19,7 +19,7 @@ class VAE_prop():
                weights_file=None,
                ):
         charset_length = charset
-        epsilon_std = 0.01
+        epsilon_std = 1
         def sampling(args):   # 采样   std标准差
             z_mean_, z_log_var_ = args
             batch_size = K.shape(z_mean_)[0]                   #返回张量形状
@@ -112,7 +112,7 @@ class VAE_prop():
         h = GRU(488, return_sequences=True, name='gru_1')(h)
         h = GRU(488, return_sequences=True, name='gru_2')(h)
         h = GRU(488, return_sequences=True, name='gru_3')(h)
-        return TimeDistributed(Dense(charset_length, activation='softmax'), name='decoded_mean')(h)
+        return TimeDistributed(Dense(charset_length, activation='linear'), name='decoded_mean')(h)
 
     def _buildPredictor(self, z):
         h = Dense(36, name='dense0', activation='tanh')(z)

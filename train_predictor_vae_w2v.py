@@ -1,12 +1,12 @@
 import numpy as np
 import random
-RANDOM_SEED = 12260707
+RANDOM_SEED = 0
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ['PYTHONHASHSEED'] = 'RANDOM_SEED'
 session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
 from keras import backend as K
@@ -27,13 +27,13 @@ latent_dim = 196
 epochs = 1000
 
 def main():
-    filename = '/data/tp/data/per_all_w2v_30_new_250000.h5'
+    filename = '/data/tp/data/per_all_w2v_35_250000.h5'
     #filename = '/data/tp/data/per_all_250000.h5'
     h5f = h5py.File(filename, 'r')
     data_train = h5f['smiles_train'][:]
     data_val = h5f['smiles_val'][:]
-    #logp_train = h5f['logp_train'][:]
-    #logp_val = h5f['logp_val'][:]
+    logp_train = h5f['logp_train'][:]
+    logp_val = h5f['logp_val'][:]
     qed_train = h5f['qed_train'][:]
     qed_val = h5f['qed_val'][:]
     sas_train = h5f['sas_train'][:]
@@ -45,7 +45,7 @@ def main():
     model = VAE_prop()
     length = len(data_train[0])
     charset = len(data_train[0][0])
-    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_12260707(5qed-sas)(std=1).h5'
+    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_35_250000_0(5qed-sas)(std=1).h5'
     #predictorname = '/data/tp/data/model/predictor_vae_model_250000_12260707(qed).h5'
     if os.path.isfile(predictorname):
         model.load(charset, length, predictorname, latent_rep_size=latent_dim)
@@ -58,7 +58,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_30_new_250000_12260707(5qed-sas)(std=1)'
+    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_35_250000_0(5qed-sas)(std=1)'
     #TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)

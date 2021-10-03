@@ -4,10 +4,10 @@ import random
 RANDOM_SEED = 1337
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-from molecules.model import MoleculeVAE
-import os
+#import os
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+#from molecules.model import MoleculeVAE
+#import os
 import re
 import random
 import pandas as pd
@@ -88,7 +88,7 @@ from molecules.util import base32_vector, vector, vector120, base64_vector, base
 
 # 数据编码
 def data_encoder(t, train_idx, val_idx, test_idx):
-    w2v_vector = open('data/glove_vector_30_new.pkl', 'rb')
+    w2v_vector = open('data/glove_vector_35_new.pkl', 'rb')
     w2v_vector = pickle.load(w2v_vector)
 
     smiles_train = []
@@ -109,7 +109,7 @@ def data_encoder(t, train_idx, val_idx, test_idx):
         for s2 in smiles[test_idx]:
             smiles_test.append(get_w2v_vector(s2, w2v_vector))
         print(smiles_test[0][0])
-        h5f = h5py.File('/data/tp/data/per_all_glove_30_new_250000.h5', 'w')
+        h5f = h5py.File('/data/tp/data/per_all_glove_35_new_250000.h5', 'w')
         h5f.create_dataset('smiles_train', data=smiles_train)
         h5f.create_dataset('smiles_val', data=smiles_val)
         h5f.create_dataset('smiles_test', data=smiles_test)

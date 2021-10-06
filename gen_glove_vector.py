@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 
 
-f = open(r'data/vectors_35.txt')
+f = open(r'data/vectors_35_w30.txt')
 lines = f.readlines()
 glove_vector = {}
 for line in lines:
@@ -22,6 +22,6 @@ for line in lines:
         glove_vector[a[0]] = temp
 print(len(glove_vector))
 print(glove_vector[' '])
-output_smiles = open('data/glove_vector_35_new.pkl', 'wb')
+output_smiles = open('data/glove_vector_35_w30_new.pkl', 'wb')
 pickle.dump(glove_vector, output_smiles)
 output_smiles.close()

@@ -98,13 +98,13 @@ if __name__ == '__main__':
     smiles = data['smiles']
     word_size = 35
     window = 3
-    nb_negative = 1
+    nb_negative = 2
     min_count = 0
     nb_worker = 4
     nb_epoch = 10
     subsample_t = 1e-5
     nb_sentence_per_batch = 249455
-    modelname = 'model/word2vec/nb_negative_1/word2vec_w3_35.h5'
+    modelname = 'model/word2vec/nb_negative_2/word2vec_w3_35.h5'
     data, sentences = getdata(smiles)
     nb_sentence, id2word, word2id, nb_word, subsamples, charset = bulid_dic(sentences)
     print(nb_sentence)
@@ -132,12 +132,12 @@ if __name__ == '__main__':
         print(s)
         w2v_vector[s] = most_similar(word2id, s)
     #print(w2v_vector['A'])
-    output_smiles = open('data/w2v_vector_35_new_w3_n1.pkl', 'wb')
+    output_smiles = open('data/w2v_vector_35_new_w3_n2.pkl', 'wb')
     pickle.dump(w2v_vector, output_smiles)
     output_smiles.close()
 
-    output_id2word = open('data/id2word_w3_35_n1.pkl', 'wb')
-    output_word2id = open('data/word2id_w3_35_n1.pkl', 'wb')
+    output_id2word = open('data/id2word_w3_35_n2.pkl', 'wb')
+    output_word2id = open('data/word2id_w3_35_n2.pkl', 'wb')
     pickle.dump(id2word, output_id2word)
     pickle.dump(word2id, output_word2id)
 

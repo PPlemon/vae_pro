@@ -98,7 +98,7 @@ if __name__ == '__main__':
     smiles = data['smiles']
     word_size = 35
     window = 3
-    nb_negative = 2
+    nb_negative = 3
     min_count = 0
     nb_worker = 4
     nb_epoch = 10
@@ -117,7 +117,7 @@ if __name__ == '__main__':
               epochs=nb_epoch,
               batch_size=128
               )
-    #model.save(modelname)
+    model.save(modelname)
 
     #filename = '/data/tp/data/per_all_250000.h5'
     #h5f = h5py.File(filename, 'r')

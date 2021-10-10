@@ -96,7 +96,7 @@ def most_similar(word2id,w):
 if __name__ == '__main__': 
     data = pd.read_hdf('/data/tp/data/zinc-1.h5', 'table')
     smiles = data['smiles']
-    word_size = 40
+    word_size = 45
     window = 2
     nb_negative = 1
     min_count = 0
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     nb_epoch = 10
     subsample_t = 1e-5
     nb_sentence_per_batch = 249455
-    modelname = 'model/word2vec/nb_negative_1/word2vec_w2_40.h5'
+    modelname = 'model/word2vec/nb_negative_1/word2vec_w2_45.h5'
     data, sentences = getdata(smiles)
     nb_sentence, id2word, word2id, nb_word, subsamples, charset = bulid_dic(sentences)
     print(nb_sentence)

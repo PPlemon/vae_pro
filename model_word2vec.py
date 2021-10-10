@@ -104,7 +104,7 @@ if __name__ == '__main__':
     nb_epoch = 10
     subsample_t = 1e-5
     nb_sentence_per_batch = 249455
-    modelname = 'model/word2vec/nb_negative_2/word2vec_w3_35.h5'
+    modelname = 'model/word2vec/nb_negative_3/word2vec_w3_35.h5'
     data, sentences = getdata(smiles)
     nb_sentence, id2word, word2id, nb_word, subsamples, charset = bulid_dic(sentences)
     print(nb_sentence)
@@ -117,30 +117,28 @@ if __name__ == '__main__':
               epochs=nb_epoch,
               batch_size=128
               )
-    model.save(modelname)
-    #
-    # print(most_similar(word2id, ' '))
+    #model.save(modelname)
 
-    filename = '/data/tp/data/per_all_250000.h5'
-    h5f = h5py.File(filename, 'r')
-    charset = h5f['charset'][:]
+    #filename = '/data/tp/data/per_all_250000.h5'
+    #h5f = h5py.File(filename, 'r')
+    #charset = h5f['charset'][:]
 
-    print(charset)
-    w2v_vector = {}
-    for s in charset:
-        s = s.decode()
-        print(s)
-        w2v_vector[s] = most_similar(word2id, s)
+    #print(charset)
+    #w2v_vector = {}
+    #for s in charset:
+    #    s = s.decode()
+    #    print(s)
+    #    w2v_vector[s] = most_similar(word2id, s)
     #print(w2v_vector['A'])
-    output_smiles = open('data/w2v_vector_35_new_w3_n2.pkl', 'wb')
-    pickle.dump(w2v_vector, output_smiles)
-    output_smiles.close()
+    #output_smiles = open('data/w2v_vector_35_new_w3_n2.pkl', 'wb')
+    #pickle.dump(w2v_vector, output_smiles)
+    #output_smiles.close()
 
-    output_id2word = open('data/id2word_w3_35_n2.pkl', 'wb')
-    output_word2id = open('data/word2id_w3_35_n2.pkl', 'wb')
-    pickle.dump(id2word, output_id2word)
-    pickle.dump(word2id, output_word2id)
+    #output_id2word = open('data/id2word_w3_35_n2.pkl', 'wb')
+    #output_word2id = open('data/word2id_w3_35_n2.pkl', 'wb')
+    #pickle.dump(id2word, output_id2word)
+    #pickle.dump(word2id, output_word2id)
 
-    output_id2word.close()
-    output_word2id.close()
+    #output_id2word.close()
+    #output_word2id.close()
 

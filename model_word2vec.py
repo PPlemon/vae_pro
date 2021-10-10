@@ -98,13 +98,13 @@ if __name__ == '__main__':
     smiles = data['smiles']
     word_size = 35
     window = 3
-    nb_negative = 4
+    nb_negative = 5
     min_count = 0
     nb_worker = 4
     nb_epoch = 10
     subsample_t = 1e-5
     nb_sentence_per_batch = 249455
-    modelname = 'model/word2vec/nb_negative_4/word2vec_w3_35.h5'
+    modelname = 'model/word2vec/nb_negative_5/word2vec_w3_35.h5'
     data, sentences = getdata(smiles)
     nb_sentence, id2word, word2id, nb_word, subsamples, charset = bulid_dic(sentences)
     print(nb_sentence)

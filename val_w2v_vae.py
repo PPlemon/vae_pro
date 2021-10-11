@@ -7,15 +7,16 @@ import tensorflow as tf
 tf.set_random_seed(RANDOM_SEED)
 from molecules.predicted_vae_model import VAE_prop
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import h5py
 import pickle
 import base64
 from keras.models import Model,load_model
 from rdkit import Chem
+from scipy.spatial.distance import pdist
 
 # 验证
-h5f = h5py.File('/data/tp/data/per_all_w2v_30_new_250000.h5', 'r')
+h5f = h5py.File('/data/tp/data/per_all_w2v_35_w5_250000.h5', 'r')
 #data_train = h5f['smiles_train'][:]
 #data_val = h5f['smiles_val'][:]
 data_test = h5f['smiles_test'][:]
@@ -25,31 +26,32 @@ length = len(data_test[0])
 charset = len(data_test[0][0])
 h5f.close()
 model = VAE_prop()
-modelname = '/data/tp/data/model/predictor_vae_model_w2v_30_new_250000_707(5qed-sas).h5'
+modelname = '/data/tp/data/model/predictor_vae_model_w2v_35_w5_250000_42(5qed-sas)(std=1).h5'
 if os.path.isfile(modelname):
     model.load(charset, length, modelname, latent_rep_size=196)
 else:
     raise ValueError("Model file %s doesn't exist" % modelname)
 data_test_vae = model.vae_predictor.predict(data_test)[0]
 
-model = load_model('model/word2vec.h5')
-embeddings = model.get_weights()[0]
-normalized_embeddings = embeddings / (embeddings**2).sum(axis=1).reshape((-1, 1))**0.5
+w2v_vector_35_w5 = open('data/w2v_vector_35_w5.pkl', 'rb')
 
+w2v_vector = pickle.load(w2v_vector_35_w5)
 
-word2id = open('data/word2id.pkl', 'rb')
-id2word = open('data/id2word.pkl', 'rb')
+word_vector = []
+id2word = []
 
-word2id = pickle.load(word2id)
-id2word = pickle.load(id2word)
-
+for key in w2v_vector:
+    id2word.append(key)
+    word_vector.append(w2v_vector[key])
 
 def most_similar(w):
-    sims = np.dot(normalized_embeddings, w)
-    sort = sims.argsort()[::-1]
-    sort = sort[sort > 0]
-    return [(id2word[i],sims[i]) for i in sort[:1]]
-    #return v
+    sims = []
+    for i in word_vector:
+        Y = np.vstack([i, w])
+        d0 = pdist(Y, metric='Cosine')[0]
+        sims.append(d0)
+    sort = np.array(sims).argsort()
+    return [(id2word[i], sims[i]) for i in sort[:1]]
 
 t = 0
 tt = 0

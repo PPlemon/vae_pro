@@ -95,19 +95,19 @@ class VAE_prop():
                                           'out': 'accuracy'})
 
     def _buildEncoder(self, x, latent_rep_size):
-        h = Convolution1D(9, 9, activation = 'relu', name='conv_1')(x)
-        h = Convolution1D(9, 9, activation = 'relu', name='conv_2')(h)
-        h = Convolution1D(10, 11, activation = 'relu', name='conv_3')(h)
+        h = Convolution1D(9, 9, activation = 'tanh', name='conv_1')(x)
+        h = Convolution1D(9, 9, activation = 'tanh', name='conv_2')(h)
+        h = Convolution1D(10, 11, activation = 'tanh', name='conv_3')(h)
         h = Flatten(name='flatten_1')(h)
-        h = Dense(435, activation = 'relu', name='dense_1')(h)
+        h = Dense(435, activation = 'tanh', name='dense_1')(h)
 
-        z_mean = Dense(latent_rep_size, name='z_mean', activation = 'linear')(h)
-        z_log_var = Dense(latent_rep_size, name='z_log_var', activation = 'linear')(h)
+        z_mean = Dense(latent_rep_size, name='z_mean', activation = 'tanh')(h)
+        z_log_var = Dense(latent_rep_size, name='z_log_var', activation = 'tanh')(h)
 
         return (z_mean, z_log_var)
 
     def _buildDecoder(self, z, latent_rep_size, max_length, charset_length):
-        h = Dense(latent_rep_size, name='latent_input', activation='relu')(z)
+        h = Dense(latent_rep_size, name='latent_input', activation='tanh')(z)
         h = RepeatVector(max_length, name='repeat_vector')(h)                     #重复输入
         h = GRU(488, return_sequences=True, name='gru_1')(h)
         h = GRU(488, return_sequences=True, name='gru_2')(h)

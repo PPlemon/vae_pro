@@ -27,7 +27,7 @@ latent_dim = 196
 epochs = 1000
 
 def main():
-    filename = '/data/tp/data/per_all_w2v_35_w5_250000.h5'
+    filename = '/data/tp/data/per_all_w2v_35_new_w2_n1_250000.h5'
     #filename = '/data/tp/data/per_all_250000.h5'
     h5f = h5py.File(filename, 'r')
     data_train = h5f['smiles_train'][:]
@@ -45,7 +45,7 @@ def main():
     model = VAE_prop()
     length = len(data_train[0])
     charset = len(data_train[0][0])
-    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_35_w5_250000_42(5qed-sas)(std=1).h5'
+    predictorname = '/data/tp/data/model/predictor_vae_model_w2v_35_new_w2_n1_250000_42(5qed-sas)(std=1).h5'
     #predictorname = '/data/tp/data/model/predictor_vae_model_250000_12260707(qed).h5'
     if os.path.isfile(predictorname):
         model.load(charset, length, predictorname, latent_rep_size=latent_dim)
@@ -58,7 +58,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_35_w5_250000_42(5qed-sas)(std=1)'
+    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_w2v_35_new_w2_n1_250000_42(5qed-sas)(std=1)'
     #TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)

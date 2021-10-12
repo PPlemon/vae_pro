@@ -1,6 +1,6 @@
 import numpy as np
 import random
-RANDOM_SEED = 42
+RANDOM_SEED = 0
 random.seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 import tensorflow as tf
@@ -45,7 +45,7 @@ def main():
     model = VAE_prop()
     length = len(data_train[0])
     charset = len(data_train[0][0])
-    predictorname = '/data/tp/data/model/predictor_vae_model_glove_35_new_w2_250000_42(5qed-sas)(std=1).h5'
+    predictorname = '/data/tp/data/model/predictor_vae_model_glove_35_new_w2_250000_0(5qed-sas)(std=1).h5'
     #predictorname = '/data/tp/data/model/predictor_vae_model_250000_12260707(qed).h5'
     if os.path.isfile(predictorname):
         model.load(charset, length, predictorname, latent_rep_size=latent_dim)
@@ -58,7 +58,7 @@ def main():
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=20, verbose=2)
 
-    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_glove_35_new_w2_250000_42(5qed-sas)(std=1)'
+    TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_glove_35_new_w2_250000_0(5qed-sas)(std=1)'
     #TensorBoardname = '/data/tp/data/TensorBoard/predictor_vae_model_250000_12260707(qed)'
 
     tbCallBack = TensorBoard(log_dir=TensorBoardname)

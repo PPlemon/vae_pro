@@ -17,7 +17,7 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # 验证
-h5f = h5py.File('/data/tp/data/per_all_glove_35_new_w30_250000.h5', 'r')
+h5f = h5py.File('/data/tp/data/per_all_glove_35_new_w2_250000.h5', 'r')
 # data_train = h5f['smiles_train'][:]
 # data_val = h5f['smiles_val'][:]
 data_test = h5f['smiles_test'][:5000]
@@ -27,7 +27,7 @@ length = len(data_test[0])
 charset = len(data_test[0][0])
 h5f.close()
 model = VAE_prop()
-modelname = '/data/tp/data/model/predictor_vae_model_glove_35_new_w30_250000_42(5qed-sas)(std=1).h5'
+modelname = '/data/tp/data/model/predictor_vae_model_glove_35_new_w2_250000_0(5qed-sas)(std=1).h5'
 
 if os.path.isfile(modelname):
     model.load(charset, length, modelname, latent_rep_size=196)
@@ -36,7 +36,7 @@ else:
 
 data_test_vae = model.vae_predictor.predict(data_test)[0]
 
-glove_vector = open('data/glove_vector_35_new_w30.pkl', 'rb')
+glove_vector = open('data/glove_vector_35_new_w2.pkl', 'rb')
 
 glove_vector = pickle.load(glove_vector)
 

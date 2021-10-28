@@ -14,49 +14,52 @@ from scipy.spatial.distance import pdist
 
 #gp = joblib.load('/data/tp/data/model/Gaussian_model_2000_5qed-sas.pkl')
 
-from molecules.predicted_vae_model import VAE_prop
+from molecules.predicted_vae_model_glove import VAE_prop
 from rdkit import Chem
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 model = VAE_prop()
-modelname = '/data/tp/data/model/predictor_vae_model_250000_0(5qed-sas)(std=1).h5'
+modelname = '/data/tp/data/model/predictor_vae_model_glove_35_new_w2_250000_0(5qed-sas)(std=1).h5'
 if os.path.isfile(modelname):
     model.load(35, 120, modelname, latent_rep_size=196)
 else:
     raise ValueError("Model file %s doesn't exist" % modelname)
 
+glove_vector = open('data/glove_vector_35_new_w2.pkl', 'rb')
+glove_vector = pickle.load(glove_vector)
+word_vector = []
+id2word = []
+for key in glove_vector:
+    id2word.append(key)
+    word_vector.append(glove_vector[key])
 
-def decode_smiles_from_indexes(vec, charset):
-    return "".join(map(lambda x: charset[x], vec)).strip()
+def most_similar(w):
+    sims0 = []
+    for i in word_vector:
+        Y = np.vstack([i, w])
+        d0 = pdist(Y, metric='cosine')[0]
+        sims0.append(d0)
+    sort0 = np.array(sims0).argsort()
+    return [(id2word[i], sims0[i]) for i in sort0[:1]]
+
+def decode_smiles_from_vector(vec):
+    s = ''
+    for j in range(len(vec)):
+        s += most_similar(vec[j])[0][0]
+    s = s.strip()
+    return s
 
 def objective(x):
-    # res = []
-    # for i in x:
-    #     res.append(i)
     return model.predictor.predict(x.reshape(1, 196))[0]*-1
 
 def main():
-    # latent = open('data/data_train(2000)_latent(5_qed-sas).pkl', 'rb')
-    # latent = pickle.load(latent)
-    # target = open('data/data_train(2000)_target(5_qed-sas).pkl', 'rb')
-    # target = pickle.load(target)
-    #data = open('data/bottom_mol(5_qed-sas).pkl', 'rb')
-    #data = pickle.load(data)
-    h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
-    charset2 = h5f['charset'][:]
+
+    h5f = h5py.File('/data/tp/data/per_all_glove_35_new_w2_250000.h5', 'r')
     data_train = h5f['smiles_train'][:]
     qed_train = h5f['qed_train'][:]
     sas_train = h5f['sas_train'][:]
     target_train = np.array(qed_train) * 5 - np.array(sas_train)
-    charset1 = []
-    for i in charset2:
-        charset1.append(i.decode())
-    #model = VAE_prop()
-    #modelname = '/data/tp/data/model/predictor_vae_model_250000_0(5qed-sas)(std=1).h5'
-    #if os.path.isfile(modelname):
-    #    model.load(35, 120, modelname, latent_rep_size=196)
-    #else:
-    #    raise ValueError("Model file %s doesn't exist" % modelname)
+    
     t = []
     for i in target_train:
         t.append(i)
@@ -73,18 +76,16 @@ def main():
         start_pro = t[bottom_2000[j]]
         result = minimize(objective, start, method='COBYLA')
         solution = result['x']
-        # evaluation = objective(solution)
-        old = model.decoder.predict(start.reshape(1, 196)).argmax(axis=2)[0]
-        sampled = model.decoder.predict(solution.reshape(1, 196)).argmax(axis=2)[0]
-        sampled = decode_smiles_from_indexes(sampled, charset1)
+        old = model.decoder.predict(start.reshape(1, 196))[0]
+        sampled = model.decoder.predict(solution.reshape(1, 196))[0]
+        sampled = decode_smiles_from_vector(sampled)
         m = Chem.MolFromSmiles(sampled)
-        print(decode_smiles_from_indexes(old, charset1))
+        print(decode_smiles_from_vector(old))
         print(sampled)
         if m != None:
-            print('起点：', decode_smiles_from_indexes(old, charset1))
+            print('起点：', decode_smiles_from_vector(old))
             print('起点属性值：', start_pro)
             print('终点：', sampled)
-            #print('高斯预测属性值：', gp.predict(solution)[0])
             print('终点属性值：', model.predictor.predict(solution.reshape(1, 196))[0])
             print('有效\n')
             temp.append(start)
@@ -96,24 +97,9 @@ def main():
         #     print('无效\n')
 
     print(res, len(res))
-    optimization = open('data/optimization_result_from_bottom_CVAE(5qed-sas)(std=1).pkl', 'wb')
+    optimization = open('data/optimization_result_from_bottom_glove(5qed-sas)(std=1).pkl', 'wb')
     pickle.dump(res, optimization)
     optimization.close()
-
-    # print(ind2)
-    # pca = PCA(n_components=2)
-    # latent = pca.fit_transform(latent)
-    # print(type(latent))
-    # x = latent[:, 0]
-    # y = latent[:, 1]
-    # print(x)
-    # target = objective(qed_test, sas_test)
-    # print(target)
-    # figure = pyplot.figure()
-    # axis = figure.gca(projection='3d')
-    # axis.plot_trisurf(x, y, target, cmap='YlGnBu')
-    # pyplot.show()
-
 
 
 if __name__ == '__main__':

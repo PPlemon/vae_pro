@@ -14,9 +14,9 @@ from keras.models import Model, load_model
 from rdkit import Chem
 from scipy.spatial.distance import pdist
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # 验证
-h5f = h5py.File('/data/tp/data/per_all_w2v_35_w5_250000.h5', 'r')
+h5f = h5py.File('/data/tp/data/per_all_w2v_35_w2_n1_250000.h5', 'r')
 # data_train = h5f['smiles_train'][:]
 # data_val = h5f['smiles_val'][:]
 data_test = h5f['smiles_test'][:5000]
@@ -26,14 +26,14 @@ length = len(data_test[0])
 charset = len(data_test[0][0])
 h5f.close()
 model = VAE_prop()
-modelname = '/data/tp/data/model/predictor_vae_model_w2v_35_w5_250000_42(5qed-sas)(std=1).h5'
+modelname = '/data/tp/data/model/predictor_vae_model_w2v_35_w2_n1_250000_0(5qed-sas)(std=1).h5'
 if os.path.isfile(modelname):
     model.load(charset, length, modelname, latent_rep_size=196)
 else:
     raise ValueError("Model file %s doesn't exist" % modelname)
 data_test_vae = model.vae_predictor.predict(data_test)[0]
 
-w2v_vector = open('data/w2v_vector_35_w5.pkl', 'rb')
+w2v_vector = open('data/w2v_vector_35_w2_n1.pkl', 'rb')
 
 w2v_vector = pickle.load(w2v_vector)
 

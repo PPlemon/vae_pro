@@ -53,7 +53,7 @@ def most_similar(w):
     sims0 = []
     for i in word_vector:
         Y = np.vstack([i, w])
-        d0 = pdist(Y, metric='Cosine')[0]
+        d0 = pdist(Y, metric='cosine')[0]
         sims0.append(d0)
     sort0 = np.array(sims0).argsort()
     return [(id2word[i], sims0[i]) for i in sort0[:1]]

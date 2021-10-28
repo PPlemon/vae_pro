@@ -21,7 +21,9 @@ def score_mae(output, target):
 
 def main():
 
-    h5f = h5py.File('/data/tp/data/per_all_w2v_30_new_250000.h5', 'r')
+    h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
+    #h5f = h5py.File('/data/tp/data/per_all_w2v_30_new_250000.h5', 'r')
+    #h5f = h5py.File('/data/tp/data/per_all_w2v_30_new_250000.h5', 'r')
     # data_train = h5f['smiles_train'][:]
     # data_val = h5f['smiles_val'][:]
     data_train = h5f['smiles_train'][:2000]

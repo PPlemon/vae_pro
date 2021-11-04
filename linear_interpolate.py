@@ -1,11 +1,11 @@
 import numpy as np
 import random
-# RANDOM_SEED = 12260707
-# random.seed(RANDOM_SEED)
-# np.random.seed(RANDOM_SEED)
+RANDOM_SEED = 12260707
+random.seed(RANDOM_SEED)
+np.random.seed(RANDOM_SEED)
 import h5py
 import os
-
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from molecules.predicted_vae_model import VAE_prop
 from rdkit import Chem
 from rdkit.Chem import Draw
@@ -16,11 +16,11 @@ def decode_smiles_from_indexes(vec, charset):
     return "".join(map(lambda x: charset[x], vec)).strip()
 
 def main():
-    source = 'CCCC(=O)Nc1ccc(OC[C@H](O)CNC(C)C)c(C(C)=O)c1'
+    #source = 'CCCC(=O)Nc1ccc(OC[C@H](O)CNC(C)C)c(C(C)=O)c1'
     dest = 'CCCNC[C@H](O)COc1ccccc1C(=O)CCc1ccccc1'
+    source = 'CC(C)(C)c1ccc2occ(CC(=O)Nc3ccccc3F)c2c1'
 
-
-    h5f = h5py.File('data/per_all_250000.h5', 'r')
+    h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
     # data_train = h5f['smiles_train'][:]
     # data_val = h5f['smiles_val'][:]
     data_test = h5f['smiles_test'][:5000]
@@ -39,7 +39,7 @@ def main():
     width = 120
     model = VAE_prop()
     result = []
-    modelname = 'model/predictor_vae_model_250000_12260707.h5'
+    modelname = '/data/tp/data/model/CVAE/predictor_vae_model_250000_0(5qed-sas)(std=1).h5'
 
     if os.path.isfile(modelname):
         model.load(charset, length, modelname, latent_rep_size=196)
@@ -55,25 +55,6 @@ def main():
     source_x_latent = model.encoder.predict(source_encoded.reshape(1, width, len(charset1)))
     dest_x_latent = model.encoder.predict(dest_encoded.reshape(1, width, len(charset1)))
 
-    # rand0 = random.randint(0, 5000)
-    # rand1 = random.randint(0, 5000)
-    #
-    # rand0 = 3815
-    # rand1 = 4849
-    #
-    # print(rand0, rand1)
-    #
-    # item0 = data_test[rand0].argmax(axis=1)
-    # s0 = decode_smiles_from_indexes(item0, charset1)
-    # item1 = data_test[rand1].argmax(axis=1)
-    # s1 = decode_smiles_from_indexes(item1, charset1)
-    # print(s0)
-    # print(s1)
-    # x_latent = model.encoder.predict(data_test)
-    # source_x_latent = x_latent[rand0]
-    # dest_x_latent = x_latent[rand1]
-
-
     step = (dest_x_latent - source_x_latent)/float(steps)
 
     for i in range(steps):
@@ -82,12 +63,13 @@ def main():
         sampled = decode_smiles_from_indexes(sampled, charset1)
         m = Chem.MolFromSmiles(sampled)
         if m != None:
-            result.append(sampled)
+            if sampled not in result:
+                result.append(sampled)
             print(sampled)
             # f = 'data/picture/' + str(i) + '.png'
             # Draw.MolToFile(m, f, size=(150, 100))
-    result1 = list(set(result))
-    print(len(result1))
-    print(result1)
+    #result1 = list(set(result))
+    print(len(result))
+    print(result)
 if __name__ == '__main__':
     main()

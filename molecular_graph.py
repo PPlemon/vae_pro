@@ -44,7 +44,7 @@ f = 'picture_1/start_CVAE.png'
 Draw.MolToFile(m, f, size=(150, 100))
 
 end = decode_smiles_from_indexes(end,charset)
-print(end)
+#print(end)
 m = Chem.MolFromSmiles(end)
 f = 'picture_1/end_CVAE.png'
 Draw.MolToFile(m, f, size=(150, 100))

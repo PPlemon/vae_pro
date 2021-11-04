@@ -69,7 +69,7 @@ h5f.close()
 model = VAE_prop()
 
 #modelname = '/data/tp/data/model/predictor_vae_model_250000_0(5qed-sas)(std=1).h5'
-modelname = '/data/tp/data/model/predictor_vae_model_w2v_35_w2_n1_250000_0(5qed-sas)(std=1).h5'
+modelname = '/data/tp/data/model/w2v/predictor_vae_model_w2v_35_w2_n1_250000_0(5qed-sas)(std=1).h5'
 #modelname = '/data/tp/data/model/predictor_vae_model_glove_35_new_w2_250000_0(5qed-sas)(std=1).h5'
 
 if os.path.isfile(modelname):
@@ -97,8 +97,8 @@ print(sum(pca.explained_variance_ratio_))
 del x_latent
 
 x_latent_proj = normalization(x_latent_proj)
-x = x_latent_proj[:, 3]
-y = x_latent_proj[:, 4]
+x = x_latent_proj[:, 1]
+y = x_latent_proj[:, 2]
 
 
 fig = plt.figure(figsize=(5.5, 4.5))
@@ -127,5 +127,5 @@ ax2.get_yaxis().set_visible(False)
 a = ax2.scatter(x, y, c=target, cmap='YlGnBu_r', marker='.', s=1)
 
 fig.colorbar(a, ax=ax2)
-plt.savefig(fname="picture_1/predictor_vae_w2v_alldata_latent(5qed-sas)(3,4).png",figsize=[5.5,4.5],bbox_inches='tight')
+plt.savefig(fname="picture_1/predictor_vae_w2v_alldata_latent(5qed-sas)(1,2).png",figsize=[5.5,4.5],bbox_inches='tight')
 #plt.show()

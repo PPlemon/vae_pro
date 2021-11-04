@@ -19,6 +19,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 # optimization path
 #h5f = h5py.File('/data/tp/data/per_all_250000.h5', 'r')
 h5f = h5py.File('/data/tp/data/per_all_w2v_35_w2_n1_250000.h5', 'r')
+#h5f = h5py.File('/data/tp/data/per_all_glove_35_new_w2_250000.h5', 'r')
 data_train = h5f['smiles_train'][:]
 # data_val = h5f['smiles_val'][:]
 # data_test = h5f['smiles_test'][:]
@@ -28,20 +29,21 @@ sas_train = h5f['sas_train'][:]
 target_train = np.array(qed_train)*5 - np.array(sas_train)
 print(max(target_train))
 
-optimization_result = open('data/optimization_result_from_bottom_w2v(5qed-sas)(std=1).pkl', 'rb')
+optimization_result = open('data/optimization_result_from_bottom_w2v(5qed-sas)(std=1)(5000).pkl', 'rb')
+#optimization_result = open('data/optimization_result_from_bottom_glove(5qed-sas)(std=1)(5000).pkl', 'rb')
 optimization_result = pickle.load(optimization_result)
 
-path0 = optimization_result[6][0]
-path1 = optimization_result[6][1]
+path0 = optimization_result[14]['start_latent']
+path1 = optimization_result[14]['end_latent']
 
 length = len(data_train[0])
 charset = len(data_train[0][0])
 
 h5f.close()
 model = VAE_prop()
-# modelname = 'model/predictor_vae_model_w2v_30_new_250000_12260707(2).h5'
 #modelname = '/data/tp/data/model/predictor_vae_model_250000_0(5qed-sas)(std=1).h5'
-modelname = '/data/tp/data/model/predictor_vae_model_w2v_35_w2_n1_250000_0(5qed-sas)(std=1).h5'
+modelname = '/data/tp/data/model/w2v/predictor_vae_model_w2v_35_w2_n1_250000_0(5qed-sas)(std=1).h5'
+#modelname = '/data/tp/data/model/glove/predictor_vae_model_glove_35_new_w2_250000_0(5qed-sas)(std=1).h5'
 if os.path.isfile(modelname):
     model.load(charset, length, modelname, latent_rep_size=196)
 else:
@@ -97,5 +99,5 @@ ax2.scatter(x[-2], y[-2], marker='*', s=50, color='b')
 ax2.scatter(x[-1], y[-1], marker='*', s=50, color='r')
 ax2.plot([x[-2], x[-1]], [y[-2], y[-1]], color='r')
 fig.colorbar(a, ax=ax2)
-plt.savefig(fname="picture_1/optimization_path_w2v(5qed-sas)(std=1).png",figsize=[5.5,4.5],bbox_inches='tight')
+plt.savefig(fname="picture_1/optimization_path_w2v(5qed-sas)(std=1)(3,4)(new).png",figsize=[5.5,4.5],bbox_inches='tight')
 #plt.show()

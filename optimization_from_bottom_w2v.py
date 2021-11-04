@@ -19,7 +19,7 @@ from rdkit import Chem
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 model = VAE_prop()
-modelname = '/data/tp/data/model/predictor_vae_model_w2v_35_w2_n1_250000_0(5qed-sas)(std=1).h5'
+modelname = '/data/tp/data/model/w2v/predictor_vae_model_w2v_35_w2_n1_250000_0(5qed-sas)(std=1).h5'
 if os.path.isfile(modelname):
     model.load(35, 120, modelname, latent_rep_size=196)
 else:
@@ -65,39 +65,43 @@ def main():
         t.append(i)
     t = np.array(t)
     sort = t.argsort()
-    bottom_2000 = sort[:2000]
+    bottom_2000 = sort[:5000]
     print(t[bottom_2000[:10]])
     res = []
-    data = model.encoder.predict(data_train)
+    data_latent = model.encoder.predict(data_train)
 
     for j in range(len(bottom_2000)):
-        temp = []
-        start = data[bottom_2000[j]]
-        start_pro = t[bottom_2000[j]]
-        result = minimize(objective, start, method='COBYLA')
-        solution = result['x']
-        old = model.decoder.predict(start.reshape(1, 196))[0]
-        sampled = model.decoder.predict(solution.reshape(1, 196))[0]
-        sampled = decode_smiles_from_vector(sampled)
-        m = Chem.MolFromSmiles(sampled)
-        print(decode_smiles_from_vector(old))
-        print(sampled)
+        temp = {}
+        #start_onehot = data_train[bottom_2000[j]]
+        #start_smiles = decode_smiles_from_indexes(start_onehot)
+        start_latent = data_latent[bottom_2000[j]]
+        #start_pro = t[bottom_2000[j]]
+        result = minimize(objective, start_latent, method='COBYLA')
+        end_latent = result['x']
+        end_onehot = model.decoder.predict(end_latent.reshape(1, 196))[0]
+        end_smiles = decode_smiles_from_vector(end_onehot)
+        m = Chem.MolFromSmiles(end_smiles)
         if m != None:
-            print('起点：', decode_smiles_from_vector(old))
+            start_onehot = data_train[bottom_2000[j]]
+            start_smiles = decode_smiles_from_vector(start_onehot)
+            start_pro = t[bottom_2000[j]]
+            end_pro = model.predictor.predict(end_latent.reshape(1, 196))[0]
+            print('起点：', start_smiles)
             print('起点属性值：', start_pro)
-            print('终点：', sampled)
-            print('终点属性值：', model.predictor.predict(solution.reshape(1, 196))[0])
+            print('终点：', end_smiles)
+            print('终点属性值：', end_pro)
             print('有效\n')
-            temp.append(start)
-            temp.append(solution)
-            temp.append(start_pro)
-            temp.append(model.predictor.predict(solution.reshape(1, 196))[0])
+            temp['start_latent'] = start_latent
+            temp['start_onehot'] = start_onehot
+            temp['start_smiles'] = start_smiles
+            temp['start_pro'] = start_pro
+            temp['end_latent'] = end_latent
+            temp['end_smiles'] = end_smiles
+            temp['end_pro'] = end_pro
             res.append(temp)
-        # else:
-        #     print('无效\n')
 
     print(res, len(res))
-    optimization = open('data/optimization_result_from_bottom_w2v(5qed-sas)(std=1).pkl', 'wb')
+    optimization = open('data/optimization_result_from_bottom_w2v(5qed-sas)(std=1)(5000).pkl', 'wb')
     pickle.dump(res, optimization)
     optimization.close()
 
